@@ -1,65 +1,87 @@
-import Image from "next/image";
+import { fetchReports, Report } from "../lib/api";
+import ReportCard from "../components/ReportCard";
 
-export default function Home() {
+export default async function Home() {
+  let reports: Report[] = [];
+  let error = null;
+
+  try {
+    reports = await fetchReports();
+  } catch (e) {
+    error = "Unable to connect to the Intelligence Hub. Please ensure the Manager API is running.";
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30">
+      {/* Dynamic Background Pattern */}
+      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_50%,rgba(17,24,39,1)_0%,rgba(5,5,5,1)_100%)]" />
+      <div className="fixed inset-0 -z-10 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+
+      <header className="border-b border-white/5 bg-black/20 backdrop-blur-xl sticky top-0 z-50">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+          <div className="flex items-center gap-4">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-xl shadow-lg shadow-blue-500/40">
+              A
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight">Ayato Studio <span className="text-blue-500">Portal</span></h1>
+              <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Intelligence Orchestration</p>
+            </div>
+          </div>
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+            <a href="#" className="hover:text-white transition-colors">Reports</a>
+            <a href="#" className="hover:text-white transition-colors">LogicHive</a>
+            <a href="#" className="hover:text-white transition-colors">Account</a>
+          </nav>
+          <div className="h-10 w-10 rounded-full border border-white/10 bg-white/5" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <section className="mx-auto max-w-7xl px-6 py-12">
+        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h2 className="text-4xl font-black tracking-tight mb-2">
+              Intelligence <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 text-glow-blue">Insights</span>
+            </h2>
+            <p className="text-gray-400 max-w-xl">
+              Real-time analysis reports generated by the Ayato Intelligence Engine.
+              Decoupled, scalable, and API-driven orchestration for the next generation of SaaS.
+            </p>
+          </div>
+          <button className="rounded-full bg-white px-6 py-3 text-sm font-bold text-black transition-transform hover:scale-105 active:scale-95 shadow-xl">
+            Upgrade Plan
+          </button>
         </div>
-      </main>
-    </div>
+
+        {error ? (
+          <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-12 text-center backdrop-blur-xl">
+            <p className="text-red-400 mb-2 font-medium">{error}</p>
+            <p className="text-xs text-red-400/60">MANAGER_URL: {process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}</p>
+          </div>
+        ) : reports.length === 0 ? (
+          <div className="rounded-3xl border border-white/5 bg-white/5 p-24 text-center backdrop-blur-xl">
+            <div className="mx-auto mb-6 h-12 w-12 text-gray-600">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <p className="text-xl font-bold text-gray-500 mb-2">No Reports Found</p>
+            <p className="text-sm text-gray-600">The Intelligence Engine hasn't delivered any artifacts yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {reports.map((report, idx) => (
+              <ReportCard key={idx} report={report} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <footer className="mt-24 border-t border-white/5 py-12">
+        <div className="mx-auto max-w-7xl px-6 text-center text-sm text-gray-600">
+          &copy; 2026 Ayato Studio. Powered by Antigravity Intelligence.
+        </div>
+      </footer>
+    </main>
   );
 }
