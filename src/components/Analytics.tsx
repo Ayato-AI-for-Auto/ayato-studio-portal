@@ -5,11 +5,22 @@ import Script from "next/script";
 export default function Analytics() {
     const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID;
     const ADS_ID = process.env.NEXT_PUBLIC_ADS_ID;
+    const ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_ID;
 
-    if (!GA_MEASUREMENT_ID && !ADS_ID) return null;
+    if (!GA_MEASUREMENT_ID && !ADS_ID && !ADSENSE_ID) return null;
 
     return (
         <>
+            {/* Google AdSense */}
+            {ADSENSE_ID && (
+                <Script
+                    async
+                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_ID}`}
+                    crossorigin="anonymous"
+                    strategy="afterInteractive"
+                />
+            )}
+
             {/* Global Site Tag (gtag.js) - Google Analytics / Ads */}
             {(GA_MEASUREMENT_ID || ADS_ID) && (
                 <>
