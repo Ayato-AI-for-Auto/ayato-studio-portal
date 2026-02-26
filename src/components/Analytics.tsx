@@ -16,7 +16,7 @@ export default function Analytics() {
                 <Script
                     async
                     src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_ID}`}
-                    crossorigin="anonymous"
+                    crossOrigin="anonymous"
                     strategy="afterInteractive"
                 />
             )}
