@@ -34,12 +34,15 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 export const supabase = supabaseUrl ? createClient(supabaseUrl, supabaseKey) : null as any;
 
 export async function fetchReports(): Promise<Report[]> {
-    if (!newsSupabase) {
-        console.warn('News Supabase client not initialized. Check NEXT_PUBLIC_NEWS_SUPABASE_URL.');
+    // Fallback to primary client if news-specific one is not configured
+    const client = newsSupabase || supabase;
+
+    if (!client) {
+        console.warn('Supabase client not initialized. Check NEXT_PUBLIC_SUPABASE_URL.');
         return [];
     }
 
-    const { data, error } = await newsSupabase
+    const { data, error } = await client
         .from('generated_reports')
         .select(`
             title,
