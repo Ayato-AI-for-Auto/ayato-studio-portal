@@ -120,6 +120,13 @@ export default async function ReportDetailPage({ params }: PageProps) {
 }
 
 export async function generateStaticParams() {
-    // For static export compatibility
-    return [];
+    try {
+        const reports = await fetchReports();
+        return reports.map((report) => ({
+            id: report.filename,
+        }));
+    } catch (error) {
+        console.error('Failed to generate static params for reports:', error);
+        return [];
+    }
 }
