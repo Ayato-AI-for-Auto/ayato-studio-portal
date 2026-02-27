@@ -3,6 +3,11 @@
 ## 1. システム概要
 `ayato_studio_portal` は、Ayato Intelligence Engine (Reporter) が生成した分析レポートを視覚的かつユーザーフレンドリーに表示するための「デジタル玄関口（フロントエンド）」です。Next.js (App Router) を採用し、高速なレンダリングとモダンな UI/UX を提供するとともに、SEO 要件・広告マネタイズ機能（Google AdSense等）を統合しています。
 
+### 1.1. プロジェクトの目標
+1.  **AI 潮流の最前線の可視化**: 自分自身のエンジニアとしてのアップデートを目的とした「上質な情報」を蓄積し、記録すること。
+2.  **サステナブルな運用**: Google AdSense や A8.net を活用し、閲覧者に価値を提供した対価としてシステムの維持費（API・計算リソース代）を賄うこと。
+3.  **個人開発サービスのハブ & オーナーシップ**: 将来的なサービスのポータルサイトとして機能させ、自分自身がサービスのオーナーとして Web 運用の全工程（開発・集客・収益化）を経験・蓄積すること。
+
 ---
 
 ## 2. 技術スタック
@@ -40,7 +45,7 @@ ayato_studio_portal/
 ## 4. コンポーネント詳細
 
 ### 4.1. データフェッチ層 (`src/lib/api.ts`)
-*   **`fetchReports`**: サーバーサイドコンポーネント用。環境変数 `NEXT_PUBLIC_API_URL` (または `MANAGER_URL`) を通じて、GCS と連携するバックエンド `ayato_portal_manager` の `/api/v1/reports` エンドポイントへアクセスし、永続化されたレポート一覧を取得する。常に最新の情報を表示するために、キャッシュ戦略（`no-store`等）を活用している。
+*   **`fetchReports` 及び関連機能**: サーバーサイドコンポーネント用。環境変数 (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) を使用し、`@supabase/supabase-js` クライアントを介して **Supabase の `generated_reports` や `affiliates` テーブル等から直接データを取得** します。専用の中間 API サーバーを廃止したことで、高速かつセキュア、そして低コストな構成を実現しています。常に最新の情報を表示するために、適切なキャッシュ戦略を活用しています。
 
 ### 4.2. UI プレゼンテーション層
 *   **`page.tsx`**: Ayato Studio の第一印象を決定づけるページ。ダークモードとガラスモーフィズムを基調とし、アニメーションを取り入れた「プレミアム・エントランス」。API から取得したレポート配列を反復処理し、`ReportCard` に渡してグリッド表示する。
@@ -51,19 +56,19 @@ ayato_studio_portal/
 *   Next.js の `next/script` を用いて、`afterInteractive` 戦略で Google Analytics、タグマネージャー、AdSense スクリプトを非同期かつパフォーマンスを落とさずにロードしている。
 
 ### 4.4. SEO および クローラー最適化
-*   **`sitemap.ts`**: 単なる静的ページのリストではなく、ビルド時・アクセス時に Portal Manager に問い合わせ、動的に生成された個々のレポートURLを `sitemap.xml` に反映する。これにより、新着レポートが速やかに Google のインデックス対象となる。
-*   **`robots.ts`**: クローラーに対してクロール対象（すべてのルート）と除外対象（内部向けAPI等）を指定し、`ayato-studio.ai/sitemap.xml` の場所を明記している。
+*   **`sitemap.ts`**: 単なる静的ページのリストではなく、ビルド時・アクセス時に **Supabase** に問い合わせ、動的に生成された個々のレポートURLを `sitemap.xml` に反映する。これにより、新着レポートが速やかに Google のインデックス対象となる。
+*   **`robots.ts`**: クローラーに対してクロール対象（すべてのルート）と除外対象を指定し、`https://ayato-studio.ai/sitemap.xml` の場所を明記している。
 
 ---
 
 ## 5. 主要なデータフロー
 
-1.  **クライアントからのアクセス**: ユーザー（または Googlebot）が `ayato-studio.ai` にアクセス。
+1.  **クライアントからのアクセス**: ユーザー（または Googlebot）が `https://ayato-studio.ai` にアクセス。
 2.  **Next.js サーバー処理**: 
-    - `page.tsx` が Server Component として実行され、`src/lib/api.ts` の `fetchReports` を呼び出す。
-3.  **ダウンストリーム API**: Next.js サーバーから Cloud Run 上の `ayato_portal_manager` へ GET 要求を発行。Manager は Google Cloud Storage (GCS) から履歴を読み取って応答を返す。
+    - `page.tsx` が Server Component として実行され、`src/lib/api.ts` を通じて Supabase にクエリを発行。
+3.  **ダウンストリーム (DB)**: **Supabase** が最新のレポートデータとアフィリエイト情報を直接返す。
 4.  **レンダリング**: 取得したデータを元に HTML をサーバー側で構築。完成したページと Tailwind のスタイル、Analytics スクリプトがクライアントへ渡される。
-5.  **Analytics / Ads ロード**: ブラウザ側で Hydration 後に各タグが動き出し、トラッキングと広告表示が完了する。
+5.  **Analytics / Ads ロード**: ブラウザ側で Hydration 後に各タグが動き出し、トラッキングと動的広告表示が完了する。
 
 ---
 

@@ -11,6 +11,16 @@ export interface Report {
     timestamp: string;
 }
 
+export interface LogicHiveFunction {
+    id: string;
+    name: string;
+    code: string;
+    description: string;
+    tags: string[];
+    quality_score: number;
+    created_at: string;
+}
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -52,4 +62,20 @@ export async function fetchReports(): Promise<Report[]> {
         filename: r.item_id,
         timestamp: r.generated_at,
     }));
+}
+
+export async function fetchLogicHiveFunctions(): Promise<LogicHiveFunction[]> {
+    const { data, error } = await supabase
+        .from('logichive_functions')
+        .select('*')
+        .order('quality_score', { ascending: false })
+        .limit(20);
+
+    if (error) {
+        console.error('LogicHive fetch error:', error);
+        // Fallback or empty list
+        return [];
+    }
+
+    return data || [];
 }

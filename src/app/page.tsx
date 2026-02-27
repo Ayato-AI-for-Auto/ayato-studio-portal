@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { fetchReports, Report } from "../lib/api";
 import ReportCard from "../components/ReportCard";
 
@@ -34,7 +35,7 @@ export default async function Home() {
           </div>
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
             <a href="#reports" className="hover:text-white transition-colors cursor-pointer">Reports</a>
-            <a href="https://logichive.ayato-studio.ai" className="hover:text-white transition-colors">LogicHive</a>
+            <Link href="/logichive" className="hover:text-white transition-colors">LogicHive (SaaS)</Link>
             <a href="#" className="hover:text-white transition-colors">Enterprise</a>
           </nav>
           <div className="flex items-center gap-4">
@@ -68,12 +69,47 @@ export default async function Home() {
             <a href="#reports" className="w-full sm:w-auto rounded-full bg-white px-8 py-4 text-sm font-black text-black transition-all hover:bg-gray-200 hover:scale-105 active:scale-95 shadow-2xl shadow-white/10">
               View Live Reports
             </a>
-            <a href="https://logichive.ayato-studio.ai" className="w-full sm:w-auto rounded-full bg-white/5 border border-white/10 px-8 py-4 text-sm font-black text-white backdrop-blur-xl transition-all hover:bg-white/10">
-              Connect LogicHive
-            </a>
+            <Link href="/logichive" className="w-full sm:w-auto rounded-full bg-white/5 border border-white/10 px-8 py-4 text-sm font-black text-white backdrop-blur-xl transition-all hover:bg-white/10">
+              Explore LogicHive
+            </Link>
           </div>
         </div>
       </div>
+
+      {/* Projects Grid Section */}
+      <section className="mx-auto max-w-7xl px-6 py-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <Link href="#reports" className="group p-8 rounded-[2.5rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="text-8xl font-black">01</span>
+            </div>
+            <div className="relative z-10">
+              <div className="h-12 w-12 rounded-2xl bg-blue-600/20 flex items-center justify-center text-blue-500 mb-6 font-black group-hover:scale-110 transition-transform">
+                R
+              </div>
+              <h3 className="text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors">Ayato Reporter</h3>
+              <p className="text-gray-500 font-medium leading-relaxed max-w-sm">
+                Autonomous market intelligence engine delivering deep-dive reports on AI trends and research.
+              </p>
+            </div>
+          </Link>
+
+          <Link href="/logichive" className="group p-8 rounded-[2.5rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="text-8xl font-black">02</span>
+            </div>
+            <div className="relative z-10">
+              <div className="h-12 w-12 rounded-2xl bg-cyan-600/20 flex items-center justify-center text-cyan-500 mb-6 font-black group-hover:scale-110 transition-transform">
+                L
+              </div>
+              <h3 className="text-3xl font-black mb-4 group-hover:text-cyan-400 transition-colors">LogicHive (SaaS)</h3>
+              <p className="text-gray-500 font-medium leading-relaxed max-w-sm">
+                The logic warehouse for AI agents. Push, verify, and reuse functions across your organization.
+              </p>
+            </div>
+          </Link>
+        </div>
+      </section>
 
       <section id="reports" className="mx-auto max-w-7xl px-6 py-24 scroll-mt-20">
         <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
