@@ -50,7 +50,7 @@ export default async function LogicHivePage() {
                     </p>
                     <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-6">
                         <a
-                            href="https://github.com/Ayato-AI-for-Auto/LogicHive/releases/tag/v2.2.4"
+                            href="https://github.com/Ayato-AI-for-Auto/LogicHive/releases/latest"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full md:w-auto px-10 py-4 rounded-xl bg-white text-black font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.2)] text-center"
@@ -96,7 +96,7 @@ export default async function LogicHivePage() {
                         </p>
                         <div className="mt-6 pt-6 border-t border-white/5">
                             <a
-                                href="https://github.com/Ayato-AI-for-Auto/LogicHive/releases/tag/v2.2.4"
+                                href="https://github.com/Ayato-AI-for-Auto/LogicHive/releases/latest"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-cyan-400 text-xs font-bold hover:underline"
