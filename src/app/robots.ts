@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: '/api/',
         },
-        sitemap: 'https://ayato-studio-portal.web.app/sitemap.xml',
+        sitemap: 'https://ayato-studio.ai/sitemap.xml',
     }
 }
