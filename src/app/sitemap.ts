@@ -17,6 +17,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'weekly',
             priority: 0.9,
         },
+        {
+            url: 'https://ayato-studio.ai/terms',
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
+        },
+        {
+            url: 'https://ayato-studio.ai/privacy',
+            lastModified: new Date(),
+            changeFrequency: 'monthly',
+            priority: 0.3,
+        },
     ];
 
     try {

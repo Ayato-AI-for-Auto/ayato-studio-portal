@@ -139,8 +139,8 @@ export default async function ReportDetailPage({ params }: PageProps) {
                 <div className="mx-auto max-w-7xl px-6 flex justify-between items-center text-gray-500 text-xs">
                     <p>&copy; 2026 Ayato Studio. All rights reserved.</p>
                     <div className="flex gap-6">
-                        <a href="#" className="hover:text-white">Privacy</a>
-                        <a href="#" className="hover:text-white">Terms</a>
+                        <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
+                        <Link href="/terms" className="hover:text-white">Terms of Service</Link>
                         <Link href="/" className="hover:text-white">Back to Hub</Link>
                     </div>
                 </div>
