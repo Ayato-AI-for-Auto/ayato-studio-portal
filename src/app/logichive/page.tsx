@@ -3,8 +3,6 @@ import React from 'react';
 import Link from 'next/link';
 import { fetchLogicHiveFunctions } from '@/lib/api';
 
-export const dynamic = 'force-dynamic';
-
 export default async function LogicHivePage() {
     const functions = await fetchLogicHiveFunctions();
 

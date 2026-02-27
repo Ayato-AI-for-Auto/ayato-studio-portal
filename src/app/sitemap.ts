@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next'
+import { fetchReports } from '../lib/api'
 
 export const dynamic = 'force-static';
-
-const MANAGER_URL = process.env.NEXT_PUBLIC_MANAGER_URL || 'http://localhost:8000';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const staticPages: MetadataRoute.Sitemap = [
@@ -12,12 +11,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'daily',
             priority: 1,
         },
+        {
+            url: 'https://ayato-studio.ai/logichive',
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.9,
+        },
     ];
 
     try {
-        const response = await fetch(`${MANAGER_URL}/api/v1/reports`, { next: { revalidate: 3600 } });
-        if (response.ok) {
-            const reports = await response.json();
+        const reports = await fetchReports();
+        if (reports && reports.length > 0) {
             const reportPages: MetadataRoute.Sitemap = reports.map((report: any) => ({
                 url: `https://ayato-studio.ai/reports/${report.filename}`,
                 lastModified: new Date(report.timestamp),
