@@ -28,7 +28,7 @@ export default function AuthCallbackPage() {
         // The Supabase JS client automatically picks up tokens
         // from the URL hash (#access_token=...) and establishes
         // the session. We just need to listen for the event.
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        const authListener = supabase.auth.onAuthStateChange(
             (event: string) => {
                 if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                     // Session established, redirect to LogicHive
@@ -36,9 +36,11 @@ export default function AuthCallbackPage() {
                 }
             }
         );
+        const subscription = authListener.data.subscription;
 
         // Fallback: if already signed in, redirect immediately
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        supabase.auth.getSession().then((result: any) => {
+            const session = result?.data?.session;
             if (session) {
                 router.replace('/logichive');
             }
