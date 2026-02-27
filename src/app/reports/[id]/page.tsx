@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { fetchReportByFilename, fetchReports } from '../../../lib/api';
+import { fetchReportByFilename, fetchReports } from '@/lib/api';
 import { notFound } from 'next/navigation';
 
 interface PageProps {
