@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { Report } from "../lib/api";
 
 export default function ReportCard({ report }: { report: Report }) {
     return (
-        <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10 hover:shadow-2xl hover:shadow-blue-500/10">
+        <Link href={`/reports/${report.filename}`} className="group relative block overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10 hover:shadow-2xl hover:shadow-blue-500/10">
             <div className="flex items-center justify-between mb-4">
                 <span className="inline-flex items-center rounded-full bg-blue-500/20 px-3 py-1 text-xs font-medium text-blue-400">
                     {report.category}
@@ -27,6 +28,6 @@ export default function ReportCard({ report }: { report: Report }) {
                     <span className="text-sm font-semibold text-blue-400">Score: {report.score}</span>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }

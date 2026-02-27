@@ -73,10 +73,48 @@ export async function fetchReports(): Promise<Report[]> {
         category: r.raw_items?.category || 'News',
         market: r.raw_items?.market || 'General',
         language: r.language,
-        score: 0, // Score can be added to generated_reports if needed
+        score: 0,
         filename: r.item_id,
         timestamp: r.generated_at,
     }));
+}
+
+export async function fetchReportByFilename(filename: string): Promise<Report | null> {
+    const client = newsSupabase || supabase;
+    if (!client) return null;
+
+    const { data, error } = await client
+        .from('generated_reports')
+        .select(`
+            title,
+            content_md,
+            language,
+            item_id,
+            generated_at,
+            raw_items (
+                category,
+                market,
+                url
+            )
+        `)
+        .eq('item_id', filename)
+        .maybeSingle();
+
+    if (error || !data) {
+        console.error('Fetch report error:', error);
+        return null;
+    }
+
+    return {
+        title: data.title,
+        content: data.content_md,
+        category: (data.raw_items as any)?.category || 'News',
+        market: (data.raw_items as any)?.market || 'General',
+        language: data.language,
+        score: 0,
+        filename: data.item_id,
+        timestamp: data.generated_at,
+    };
 }
 
 export async function fetchLogicHiveFunctions(): Promise<LogicHiveFunction[]> {
@@ -94,7 +132,7 @@ export async function fetchLogicHiveFunctions(): Promise<LogicHiveFunction[]> {
     }
 }
 
-const logicHiveHubUrl = process.env.NEXT_PUBLIC_LOGICHIVE_HUB_URL || 'http://localhost:8080';
+const logicHiveHubUrl = process.env.NEXT_PUBLIC_LOGICHIVE_HUB_URL || 'http://localhost:8000';
 
 export async function ensureOrganization(): Promise<string | null> {
     if (!supabase) return null;
@@ -156,8 +194,8 @@ export async function createCheckoutSession(priceId: string): Promise<string | n
             },
             body: JSON.stringify({
                 price_id: priceId,
-                success_url: `${window.location.origin}/api/v1/billing/success`,
-                cancel_url: `${window.location.origin}/api/v1/billing/cancel`,
+                success_url: `${window.location.origin}/logichive?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `${window.location.origin}/logichive?billing_cancelled=true`,
             }),
         });
 
