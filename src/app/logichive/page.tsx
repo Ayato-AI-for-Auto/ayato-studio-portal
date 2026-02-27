@@ -2,9 +2,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { fetchLogicHiveFunctions } from '@/lib/api';
+import CheckoutButton from '@/components/LogicHive/CheckoutButton';
+import AuthStatus from '@/components/LogicHive/AuthStatus';
 
 export default async function LogicHivePage() {
     const functions = await fetchLogicHiveFunctions();
+
+    // Calibrated Price IDs
+    const BASIC_PRICE_ID = "price_1T5LsGPCeWLY3R8VTNru2yRK";
+    const PRO_PRICE_ID = "price_1T5LsHPCeWLY3R8V9yDLnPMG";
 
     return (
         <div className="min-h-screen bg-[#030303] text-white selection:bg-cyan-500/30">
@@ -27,9 +33,7 @@ export default async function LogicHivePage() {
                         <Link href="#features" className="hover:text-white transition-colors">FEATURES</Link>
                         <Link href="#explorer" className="hover:text-white transition-colors">EXPLORER</Link>
                         <Link href="#pricing" className="hover:text-white transition-colors">PRICING</Link>
-                        <button className="px-5 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300">
-                            CONSOLE
-                        </button>
+                        <AuthStatus />
                     </div>
                 </header>
 
@@ -126,7 +130,7 @@ export default async function LogicHivePage() {
                                             {fn.tags?.[0] || 'Logic'}
                                         </div>
                                         <div className="text-cyan-400 font-mono text-xs">
-                                            Score: {fn.quality_score}
+                                            Score: {fn.reliability_score}
                                         </div>
                                     </div>
                                     <h4 className="text-lg font-bold mb-2 truncate">{fn.name}</h4>
@@ -165,7 +169,9 @@ export default async function LogicHivePage() {
                                 <li className="flex items-center"><span className="text-cyan-400 mr-2">✓</span> Public Verification</li>
                                 <li className="flex items-center"><span className="text-cyan-400 mr-2">✓</span> Basic AI Insight</li>
                             </ul>
-                            <button className="w-full py-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors font-bold">Get Started</button>
+                            <button className="w-full py-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors font-bold text-white/50 cursor-not-allowed">
+                                Current Plan
+                            </button>
                         </div>
 
                         {/* Basic */}
@@ -179,7 +185,13 @@ export default async function LogicHivePage() {
                                 <li className="flex items-center"><span className="text-cyan-400 mr-2">✓</span> AI Lab Scoring</li>
                                 <li className="flex items-center"><span className="text-cyan-400 mr-2">✓</span> Quota Management</li>
                             </ul>
-                            <button className="w-full py-4 rounded-2xl bg-cyan-500 text-black hover:bg-cyan-400 transition-colors font-bold shadow-lg shadow-cyan-500/20">Subscribe Now</button>
+                            <CheckoutButton
+                                priceId={BASIC_PRICE_ID}
+                                variant="basic"
+                                className="w-full py-4 rounded-2xl bg-cyan-500 text-black hover:bg-cyan-400 transition-colors font-bold shadow-lg shadow-cyan-500/20"
+                            >
+                                Subscribe Now
+                            </CheckoutButton>
                         </div>
 
                         {/* Enterprise */}
@@ -192,7 +204,13 @@ export default async function LogicHivePage() {
                                 <li className="flex items-center"><span className="text-purple-400 mr-2">✓</span> Priority Rerank</li>
                                 <li className="flex items-center"><span className="text-purple-400 mr-2">✓</span> Dedicated Support</li>
                             </ul>
-                            <button className="w-full py-4 rounded-2xl border border-white/10 hover:bg-white/5 transition-colors font-bold">Contact Sales</button>
+                            <CheckoutButton
+                                priceId={PRO_PRICE_ID}
+                                variant="pro"
+                                className="w-full py-4 rounded-2xl border border-white/10 hover:bg-white/5 transition-colors font-bold"
+                            >
+                                Contact Sales
+                            </CheckoutButton>
                         </div>
                     </div>
                 </section>
