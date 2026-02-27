@@ -9,6 +9,7 @@ export interface Report {
     score: number;
     filename: string;
     timestamp: string;
+    sourceUrl?: string;
 }
 
 export interface LogicHiveFunction {
@@ -76,6 +77,7 @@ export async function fetchReports(): Promise<Report[]> {
         score: 0,
         filename: r.item_id,
         timestamp: r.generated_at,
+        sourceUrl: r.raw_items?.url || undefined,
     }));
 }
 
@@ -114,6 +116,7 @@ export async function fetchReportByFilename(filename: string): Promise<Report | 
         score: 0,
         filename: data.item_id,
         timestamp: data.generated_at,
+        sourceUrl: (data.raw_items as any)?.url || undefined,
     };
 }
 

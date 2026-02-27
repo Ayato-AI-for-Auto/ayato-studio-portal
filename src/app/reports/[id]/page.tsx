@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { fetchReportByFilename, fetchReports } from '@/lib/api';
 import { notFound } from 'next/navigation';
+import Markdown from 'react-markdown';
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -67,26 +68,55 @@ export default async function ReportDetailPage({ params }: PageProps) {
                         </div>
                         <div className="h-10 w-px bg-white/10" />
                         <div>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Market focus</p>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Market Focus</p>
                             <p className="text-sm font-bold capitalize">{report.market}</p>
                         </div>
                         <div className="h-10 w-px bg-white/10" />
                         <div>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Reliability</p>
-                            <p className="text-sm font-bold text-blue-400">Verified Artifact</p>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Language</p>
+                            <p className="text-sm font-bold">{report.language.toUpperCase()}</p>
                         </div>
+                        {report.sourceUrl && (
+                            <>
+                                <div className="h-10 w-px bg-white/10" />
+                                <div>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Source</p>
+                                    <a
+                                        href={report.sourceUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm font-bold text-blue-400 hover:text-blue-300 transition-colors"
+                                    >
+                                        View Original →
+                                    </a>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
 
-                {/* Content */}
+                {/* Content with Markdown Rendering */}
                 <div className="relative group">
                     <div className="absolute -inset-4 bg-gradient-to-b from-blue-600/5 to-transparent rounded-[3rem] -z-10 blur-2xl" />
 
                     <div className="p-8 md:p-12 rounded-[2.5rem] border border-white/5 bg-black/40 backdrop-blur-3xl shadow-2xl">
-                        <div className="prose prose-invert prose-blue max-w-none">
-                            <div className="text-gray-300 leading-relaxed text-lg whitespace-pre-wrap font-medium space-y-6">
-                                {report.content}
-                            </div>
+                        <div className="
+                            prose prose-invert prose-blue max-w-none
+                            prose-headings:font-black prose-headings:tracking-tight
+                            prose-h1:text-4xl prose-h1:mb-8
+                            prose-h2:text-3xl prose-h2:mb-6 prose-h2:mt-12
+                            prose-h3:text-2xl prose-h3:mb-4 prose-h3:mt-10
+                            prose-h4:text-xl prose-h4:mb-3 prose-h4:mt-8 prose-h4:text-blue-400
+                            prose-p:text-gray-300 prose-p:leading-relaxed prose-p:text-lg
+                            prose-strong:text-white prose-strong:font-bold
+                            prose-em:text-blue-300
+                            prose-li:text-gray-300 prose-li:text-lg
+                            prose-ul:space-y-2
+                            prose-hr:border-white/10 prose-hr:my-12
+                            prose-a:text-blue-400 prose-a:no-underline hover:prose-a:text-blue-300
+                            prose-blockquote:border-blue-500/40 prose-blockquote:bg-blue-500/5 prose-blockquote:rounded-xl prose-blockquote:py-1 prose-blockquote:px-4
+                        ">
+                            <Markdown>{report.content}</Markdown>
                         </div>
                     </div>
                 </div>
@@ -107,7 +137,7 @@ export default async function ReportDetailPage({ params }: PageProps) {
 
             <footer className="mt-24 border-t border-white/5 py-12 bg-black/40 backdrop-blur-xl">
                 <div className="mx-auto max-w-7xl px-6 flex justify-between items-center text-gray-500 text-xs">
-                    <p>© 2026 Ayato Studio. All rights reserved.</p>
+                    <p>&copy; 2026 Ayato Studio. All rights reserved.</p>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-white">Privacy</a>
                         <a href="#" className="hover:text-white">Terms</a>

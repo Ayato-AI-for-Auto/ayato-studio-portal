@@ -24,9 +24,7 @@ export default function ReportCard({ report }: { report: Report }) {
                     <div className="h-1 w-1 rounded-full bg-gray-700" />
                     <span className="text-xs text-gray-500">{report.language.toUpperCase()}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                    <span className="text-sm font-semibold text-blue-400">Score: {report.score}</span>
-                </div>
+                <span className="text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition-transform">Read →</span>
             </div>
         </Link>
     );
