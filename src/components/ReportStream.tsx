@@ -16,7 +16,11 @@ export default function ReportStream() {
                 setReports(data);
             } catch (e: any) {
                 console.error("Failed to load reports:", e);
-                setError("Unable to connect to the Intelligence Hub.");
+                setError(
+                    e.message?.includes("401") || e.message?.includes("403") || e.status === 401
+                        ? "Authentication Error: Please ensure the Supabase Anon Key is used (not the secret key)."
+                        : "Unable to connect to the Intelligence Hub."
+                );
             } finally {
                 setLoading(false);
             }
