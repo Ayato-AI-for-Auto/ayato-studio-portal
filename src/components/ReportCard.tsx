@@ -9,7 +9,7 @@ export default function ReportCard({ report }: { report: Report }) {
                     {report.category}
                 </span>
                 <span className="text-sm text-gray-400">
-                    {new Date(report.timestamp).toLocaleDateString()}
+                    {new Date(report.timestamp).toLocaleDateString('ja-JP')} {new Date(report.timestamp).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}
                 </span>
             </div>
             <h3 className="mb-2 text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
