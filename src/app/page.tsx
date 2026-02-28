@@ -2,6 +2,8 @@ import Link from "next/link";
 import { fetchReports, Report } from "../lib/api";
 import ReportCard from "../components/ReportCard";
 
+export const revalidate = 0;
+
 export default async function Home() {
   let reports: Report[] = [];
   let error = null;
