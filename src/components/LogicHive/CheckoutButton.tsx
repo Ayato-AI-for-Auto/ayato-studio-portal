@@ -1,33 +1,48 @@
 'use client';
 
 import React, { useState } from 'react';
-import { createCheckoutSession } from '@/lib/api';
+import { createCheckoutSession, supabase } from '@/lib/api';
 
 interface CheckoutButtonProps {
     priceId: string;
     variant: 'basic' | 'pro' | 'starter';
     className?: string;
     children: React.ReactNode;
+    disabled?: boolean;
 }
 
-export default function CheckoutButton({ priceId, variant, className, children }: CheckoutButtonProps) {
+export default function CheckoutButton({ priceId, variant, className, children, disabled }: CheckoutButtonProps) {
     const [loading, setLoading] = useState(false);
 
     const handleCheckout = async () => {
         if (variant === 'starter') return; // Starter is free
 
+        // 1. Proactive Auth Check: Avoid 'Processing' hang for unauthenticated users
+        if (supabase) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                console.log('No session found. Dispatching logichive:open-auth...');
+                window.dispatchEvent(new CustomEvent('logichive:open-auth', { bubbles: true, detail: { from: 'CheckoutButton' } }));
+                return;
+            }
+        }
+
         setLoading(true);
         try {
-            const checkoutUrl = await createCheckoutSession(priceId);
-            if (checkoutUrl) {
-                window.location.href = checkoutUrl;
+            const { url, error: checkoutError } = await createCheckoutSession(priceId);
+            if (url) {
+                window.location.href = url;
+            } else if (checkoutError) {
+                console.error('Checkout failed:', checkoutError);
+                alert(`Checkout failed: ${checkoutError}`);
             } else {
-                alert('Please sign in or create an account to subscribe.');
-                // Here we could trigger a login modal
+                // No URL and no error usually means we should prompt for auth
+                console.log('No URL/Error, likely need re-auth. Dispatching logichive:open-auth...');
+                window.dispatchEvent(new CustomEvent('logichive:open-auth', { bubbles: true, detail: { from: 'CheckoutButton' } }));
             }
-        } catch (error) {
-            console.error('Checkout failed:', error);
-            alert('Failed to start checkout. Please try again.');
+        } catch (error: any) {
+            console.error('Unexpected checkout error:', error);
+            alert(error.message || 'Failed to start checkout. Please try again.');
         } finally {
             setLoading(false);
         }

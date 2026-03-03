@@ -54,20 +54,20 @@ export default function TermsPage() {
 
                     {/* Section 2 */}
                     <section className="p-8 md:p-10 rounded-[2rem] border border-white/5 bg-white/[0.02] backdrop-blur-xl">
-                        <h3 className="text-2xl font-black mb-6 text-blue-400">第2条 - 免責事項</h3>
+                        <h3 className="text-2xl font-black mb-6 text-blue-400">第2条 - 免責事項および無保証</h3>
                         <div className="space-y-4 text-gray-300 leading-relaxed">
                             <p>
-                                本サービスで公開されるレポート、分析記事、および市場情報は、
-                                <strong className="text-white">全てAI（人工知能）によって自動生成されたもの</strong>であり、
-                                あくまで情報提供のみを目的としています。
+                                本サービス（Ayato Studio および LogicHive）で提供されるレポート、分析記事、および
+                                <strong className="text-white">LogicHive を通じて提供・共有される全てのコード（関数）</strong>は、
+                                AIによって生成されたもの、またはユーザーによって登録されたものであり、
+                                <strong className="text-blue-400">「現状有姿（As-Is）」</strong>で提供されます。
                             </p>
-                            <div className="p-6 rounded-2xl bg-yellow-500/5 border border-yellow-500/20">
-                                <p className="text-yellow-400 font-bold mb-3">重要な注意事項</p>
+                            <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/20">
+                                <p className="text-red-400 font-bold mb-3">【重要】損害賠償責任の制限</p>
                                 <ul className="space-y-2 text-sm">
-                                    <li>- 本サービスに掲載された情報は、特定の金融商品の売買を推奨・勧誘するものではありません。</li>
-                                    <li>- 本サービスに含まれる分析や予測はAIによって生成されたものであり、その正確性や完全性を保証するものではありません。</li>
-                                    <li>- 投資に関する最終的な決定は、ご自身の判断と責任において行ってください。</li>
-                                    <li>- 本サービスの利用により生じたいかなる損害についても、運営者は一切の責任を負いません。</li>
+                                    <li>- 運営者は、本サービスから取得したコードの正確性、安全性、適切性、または特定の目的への適合性について一切の保証を行いません。</li>
+                                    <li>- 本サービスが提供するコードを実際のプロジェクトに適用した結果生じたいかなる損害（システム停止、データの損失、知財侵害、金銭的損失等）についても、運営者は一切の責任を負いません。</li>
+                                    <li>- ユーザーは、提供されたコードをご自身の責任においてレビューし、必要に応じて修正・検証した上で利用するものとします。</li>
                                 </ul>
                             </div>
                         </div>
@@ -164,6 +164,7 @@ export default function TermsPage() {
                     <p>&copy; 2026 Ayato Studio. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
+                        <Link href="/tokutei" className="hover:text-white">特定商取引法に基づく表記</Link>
                         <span className="text-white font-bold">Terms of Service</span>
                         <Link href="/" className="hover:text-white">Back to Hub</Link>
                     </div>

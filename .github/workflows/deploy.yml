@@ -3,6 +3,8 @@ name: Deploy Studio Portal (Web)
 on:
   push:
     branches: [ main ]
+  repository_dispatch:
+    types: [rebuild-portal]
 
 jobs:
   deploy:

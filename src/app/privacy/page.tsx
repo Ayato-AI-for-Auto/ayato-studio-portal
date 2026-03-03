@@ -145,6 +145,7 @@ export default function PrivacyPage() {
                     <div className="flex gap-6">
                         <span className="text-white font-bold">Privacy Policy</span>
                         <Link href="/terms" className="hover:text-white">Terms of Service</Link>
+                        <Link href="/tokutei" className="hover:text-white">特定商取引法に基づく表記</Link>
                         <Link href="/" className="hover:text-white">Back to Hub</Link>
                     </div>
                 </div>

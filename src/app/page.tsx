@@ -210,6 +210,7 @@ export default function Home() {
             <div className="flex items-center gap-6 text-xs text-gray-500">
               <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
+              <a href="/tokutei" className="hover:text-white transition-colors">特定商取引法に基づく表記</a>
             </div>
             <div className="flex items-center gap-6 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all">
               <span className="text-[10px] font-black tracking-widest uppercase">Powered By</span>
