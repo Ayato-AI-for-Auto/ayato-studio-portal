@@ -94,7 +94,7 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors">Ayato Reporter</h3>
               <p className="text-gray-500 font-medium leading-relaxed max-w-sm">
-                Autonomous market intelligence engine delivering deep-dive reports on AI trends and research.
+                Autonomous market intelligence engine delivering deep-dive reports on AI trends and **Energy/Geopolitical shifts**.
               </p>
             </div>
           </Link>
