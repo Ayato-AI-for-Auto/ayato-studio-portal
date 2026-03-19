@@ -38,10 +38,10 @@ export default function Home() {
               <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Intelligence Orchestration</p>
             </div>
           </div>
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+          <nav className="flex items-center gap-4 sm:gap-8 text-sm font-medium text-gray-400">
             <a href="#reports" className="hover:text-white transition-colors cursor-pointer">Reports</a>
-            <Link href="/logichive" className="hover:text-white transition-colors">LogicHive (SaaS)</Link>
-            <a href="#" className="hover:text-white transition-colors">Enterprise</a>
+            <Link href="/logichive" className="hidden sm:inline-block hover:text-white transition-colors">LogicHive (SaaS)</Link>
+            <a href="#" className="hidden md:inline-block hover:text-white transition-colors">Enterprise</a>
           </nav>
           <div className="flex items-center gap-4">
             <button className="hidden sm:block text-sm font-medium text-gray-400 hover:text-white">Sign In</button>
@@ -53,7 +53,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <div className="relative pt-32 pb-20 px-6">
+      <div className="relative pt-20 md:pt-32 pb-16 md:pb-20 px-6">
         <div className="mx-auto max-w-5xl text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold mb-8 animate-bounce">
             <span className="relative flex h-2 w-2">
@@ -62,7 +62,7 @@ export default function Home() {
             </span>
             Ayato Studio 2.0 is Live
           </div>
-          <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9]">
+          <h2 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9]">
             Decoupled <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500">Intelligence.</span>
           </h2>
@@ -84,31 +84,31 @@ export default function Home() {
       {/* Projects Grid Section */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Link href="#reports" className="group p-8 rounded-[2.5rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 overflow-hidden relative">
+          <Link href="#reports" className="group p-6 md:p-8 rounded-3xl md:rounded-[2.5rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 overflow-hidden relative">
             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-              <span className="text-8xl font-black">01</span>
+              <span className="text-6xl md:text-8xl font-black">01</span>
             </div>
             <div className="relative z-10">
               <div className="h-12 w-12 rounded-2xl bg-blue-600/20 flex items-center justify-center text-blue-500 mb-6 font-black group-hover:scale-110 transition-transform">
                 R
               </div>
-              <h3 className="text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors">Ayato Reporter</h3>
-              <p className="text-gray-500 font-medium leading-relaxed max-w-sm">
+              <h3 className="text-2xl md:text-3xl font-black mb-4 group-hover:text-blue-400 transition-colors">Ayato Reporter</h3>
+              <p className="text-gray-500 text-sm md:text-base font-medium leading-relaxed max-w-sm">
                 Autonomous market intelligence engine delivering deep-dive reports on AI trends and **Energy/Geopolitical shifts**.
               </p>
             </div>
           </Link>
 
-          <Link href="/logichive" className="group p-8 rounded-[2.5rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 overflow-hidden relative">
+          <Link href="/logichive" className="group p-6 md:p-8 rounded-3xl md:rounded-[2.5rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 overflow-hidden relative">
             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-              <span className="text-8xl font-black">02</span>
+              <span className="text-6xl md:text-8xl font-black">02</span>
             </div>
             <div className="relative z-10">
               <div className="h-12 w-12 rounded-2xl bg-cyan-600/20 flex items-center justify-center text-cyan-500 mb-6 font-black group-hover:scale-110 transition-transform">
                 L
               </div>
-              <h3 className="text-3xl font-black mb-4 group-hover:text-cyan-400 transition-colors">LogicHive (SaaS)</h3>
-              <p className="text-gray-500 font-medium leading-relaxed max-w-sm">
+              <h3 className="text-2xl md:text-3xl font-black mb-4 group-hover:text-cyan-400 transition-colors">LogicHive (SaaS)</h3>
+              <p className="text-gray-500 text-sm md:text-base font-medium leading-relaxed max-w-sm">
                 The logic warehouse for AI agents. Push, verify, and reuse functions across your organization.
               </p>
             </div>
