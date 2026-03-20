@@ -23,14 +23,24 @@ export default function PricingTable() {
     };
 
     useEffect(() => {
-        loadOrg();
+        let isMounted = true;
+        
+        const init = async () => {
+            if (isMounted) await loadOrg();
+        };
+        init();
 
         // Listen for auth changes to reload org data
+        if (!supabase) return () => { isMounted = false; };
+        
         const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-            loadOrg();
+            if (isMounted) loadOrg();
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            isMounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     const [hasAgreedToTerms, setHasAgreedToTerms] = useState(false);
@@ -56,7 +66,7 @@ export default function PricingTable() {
         return (
             <CheckoutButton
                 priceId={priceId}
-                variant={variant as any}
+                variant={variant as 'basic' | 'pro' | 'starter'}
                 disabled={!hasAgreedToTerms}
                 className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 ${!hasAgreedToTerms
                     ? 'bg-white/5 text-white/20 cursor-not-allowed border border-white/5'

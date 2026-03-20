@@ -3,34 +3,40 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, LogicHiveFunction } from '@/lib/api';
 import Dashboard from './Dashboard';
-import Link from 'next/link';
 
 interface LogicHiveContentProps {
     publicFunctions: LogicHiveFunction[];
 }
 
 export default function LogicHiveContent({ publicFunctions }: LogicHiveContentProps) {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<any>(null); // Keep any for user if imported type not available, ideally use User from supabase-js
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
         if (!supabase) {
-            setLoading(false);
-            return;
+            if (isMounted) setLoading(false);
+            return () => { isMounted = false; };
         }
 
         const checkUser = async () => {
+            if (!supabase) return;
             const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user || null);
-            setLoading(false);
+            if (isMounted) {
+                setUser(session?.user || null);
+                setLoading(false);
+            }
         };
         checkUser();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
-            setUser(session?.user || null);
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (isMounted) setUser(session?.user || null);
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            isMounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     if (loading) {

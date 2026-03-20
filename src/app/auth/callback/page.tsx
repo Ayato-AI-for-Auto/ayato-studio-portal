@@ -20,15 +20,17 @@ export default function AuthCallbackPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        let isMounted = true;
+
         if (!supabase) {
-            setError('Supabase client not initialized.');
-            return;
+            if (isMounted) setError('Supabase client not initialized.');
+            return () => { isMounted = false; };
         }
 
         // The Supabase JS client automatically picks up tokens
         // from the URL hash (#access_token=...) and establishes
         // the session. We just need to listen for the event.
-        const authListener = supabase.auth.onAuthStateChange(
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
             (event: string) => {
                 if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                     // Session established, redirect to LogicHive
@@ -36,22 +38,21 @@ export default function AuthCallbackPage() {
                 }
             }
         );
-        const subscription = authListener.data.subscription;
 
         // Fallback: if already signed in, redirect immediately
-        supabase.auth.getSession().then((result: any) => {
-            const session = result?.data?.session;
-            if (session) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session && isMounted) {
                 router.replace('/logichive');
             }
         });
 
         // Timeout: if nothing happens in 5 seconds, show error
         const timeout = setTimeout(() => {
-            setError('Authentication timed out. Please try signing in again.');
+            if (isMounted) setError('Authentication timed out. Please try signing in again.');
         }, 5000);
 
         return () => {
+            isMounted = false;
             subscription.unsubscribe();
             clearTimeout(timeout);
         };

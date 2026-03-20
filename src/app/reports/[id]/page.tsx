@@ -7,6 +7,8 @@ interface PageProps {
     params: Promise<{ id: string }>;
 }
 
+export const dynamicParams = false;
+
 export default async function ReportDetailPage({ params }: PageProps) {
     const { id } = await params;
     const report = await fetchReportByFilename(id);

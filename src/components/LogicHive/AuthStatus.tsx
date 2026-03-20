@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/api';
 
 export default function AuthStatus() {
@@ -14,6 +15,7 @@ export default function AuthStatus() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const router = useRouter();
 
     useEffect(() => {
         if (!supabase) {
@@ -23,8 +25,10 @@ export default function AuthStatus() {
         }
 
         const checkUser = async () => {
+            const client = supabase;
+            if (!client) return;
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session } } = await client.auth.getSession();
                 setUser(session?.user || null);
             } catch (err) {
                 console.error('Failed to get Supabase session:', err);
@@ -85,9 +89,10 @@ export default function AuthStatus() {
         }
     };
 
-    const handleLogout = async () => {
+    const handleSignOut = async () => {
         if (!supabase) return;
         await supabase.auth.signOut();
+        router.refresh();
     };
 
     if (loading) return <div className="text-white/20 animate-pulse text-xs">...</div>;
@@ -98,7 +103,7 @@ export default function AuthStatus() {
             <div className="flex items-center space-x-4">
                 <span className="text-xs font-mono text-white/40 truncate max-w-[140px]">{user.email}</span>
                 <button
-                    onClick={handleLogout}
+                    onClick={handleSignOut}
                     className="text-xs font-bold text-red-400/60 hover:text-red-400 transition-colors"
                 >
                     LOGOUT

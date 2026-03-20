@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchReportByFilename, Report } from '../lib/api';
 import ReportView from './ReportView';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 interface Props {
     id: string;
@@ -63,7 +64,7 @@ export default function ReportDetailPageClientFallback({ id }: Props) {
                 <div>
                     <h2 className="text-2xl font-bold text-white mb-2">Connection Issue</h2>
                     <p className="text-gray-400 mb-6">Failed to retrieve the report. Please try again later.</p>
-                    <a href="/" className="text-blue-400 font-bold">Back to Home</a>
+                    <Link href="/" className="text-blue-400 font-bold">Back to Home</Link>
                 </div>
             </div>
         );

@@ -44,10 +44,23 @@ export const supabase = (supabaseUrl && supabaseKey)
             storageKey: 'lh-auth-token' // Ensure it doesn't conflict with Project A
         }
     })
-    : null as any;
+    : null;
 
 const logicHiveHubUrl = process.env.NEXT_PUBLIC_LOGICHIVE_HUB_URL || 'http://localhost:8000';
 console.log('[DEBUG] LogicHive Hub URL loaded:', logicHiveHubUrl);
+
+interface SupabaseReportResponse {
+    title: string;
+    content_md: string;
+    language: string;
+    item_id: string;
+    generated_at: string;
+    raw_items: {
+        category: string;
+        market: string;
+        url: string;
+    } | null;
+}
 
 export async function fetchReports(): Promise<Report[]> {
     // Fallback to primary client if news-specific one is not configured
@@ -83,7 +96,7 @@ export async function fetchReports(): Promise<Report[]> {
     if (!data) return [];
 
     // Map Supabase schema back to the UI expected Report interface
-    return data.map((r: any) => ({
+    return (data as unknown as SupabaseReportResponse[]).map((r) => ({
         title: r.title,
         content: r.content_md,
         category: r.raw_items?.category || 'News',
@@ -122,16 +135,18 @@ export async function fetchReportByFilename(filename: string): Promise<Report | 
         return null;
     }
 
+    const typedData = data as unknown as SupabaseReportResponse;
+
     return {
-        title: data.title,
-        content: data.content_md,
-        category: (data.raw_items as any)?.category || 'News',
-        market: (data.raw_items as any)?.market || 'General',
-        language: data.language,
+        title: typedData.title,
+        content: typedData.content_md,
+        category: typedData.raw_items?.category || 'News',
+        market: typedData.raw_items?.market || 'General',
+        language: typedData.language,
         score: 0,
-        filename: data.item_id,
-        timestamp: data.generated_at,
-        sourceUrl: (data.raw_items as any)?.url || undefined,
+        filename: typedData.item_id,
+        timestamp: typedData.generated_at,
+        sourceUrl: typedData.raw_items?.url || undefined,
     };
 }
 
@@ -152,7 +167,18 @@ export async function fetchLogicHiveFunctions(): Promise<LogicHiveFunction[]> {
     }
 }
 
-export async function fetchCurrentOrganization(): Promise<{ org: any | null; error?: string }> {
+export interface Organization {
+    id: string;
+    name: string;
+    api_key_hash: string;
+    user_id: string;
+    plan_type: string;
+    request_limit: number;
+    current_usage_count: number;
+    status: string;
+}
+
+export async function fetchCurrentOrganization(): Promise<{ org: Organization | null; error?: string }> {
     if (!supabase) return { org: null, error: 'Supabase client not initialized' };
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return { org: null, error: 'No active session found' };
@@ -165,10 +191,11 @@ export async function fetchCurrentOrganization(): Promise<{ org: any | null; err
             .maybeSingle();
 
         if (error) throw error;
-        return { org };
-    } catch (err: any) {
+        return { org: org as Organization };
+    } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         console.error('Fetch Org error:', err);
-        return { org: null, error: err.message || 'Failed to fetch organization' };
+        return { org: null, error: errorMessage || 'Failed to fetch organization' };
     }
 }
 
@@ -190,7 +217,7 @@ export async function ensureOrganization(): Promise<{ orgKey: string | null; err
         // 2. Auto-Onboarding: Create new org linked to user
         const newApiKey = `lh_${Math.random().toString(36).substring(2, 15)}`;
 
-        const { data: newOrg, error: insertError } = await supabase
+        const { error: insertError } = await supabase
             .from('organizations')
             .insert({
                 name: `${session.user.email}'s Org`,
@@ -206,9 +233,10 @@ export async function ensureOrganization(): Promise<{ orgKey: string | null; err
         if (insertError) throw insertError;
 
         return { orgKey: newApiKey };
-    } catch (err: any) {
+    } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         console.error('Organization onboarding error:', err);
-        return { orgKey: null, error: err.message || 'Failed to onboard organization' };
+        return { orgKey: null, error: errorMessage || 'Failed to onboard organization' };
     }
 }
 
@@ -258,12 +286,13 @@ export async function createCheckoutSession(priceId: string): Promise<{ url: str
         const data = await response.json();
         console.log('Checkout session created:', data.url || data.checkout_url);
         return { url: data.url || data.checkout_url };
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         console.error('Checkout creation error:', error);
-        if (error.name === 'AbortError') {
+        if (error instanceof Error && error.name === 'AbortError') {
             return { url: null, error: 'Connection timed out. Please check if the Hub backend is running.' };
         }
-        return { url: null, error: error.message || 'Failed to initiate checkout' };
+        return { url: null, error: errorMessage || 'Failed to initiate checkout' };
     }
 }
 
