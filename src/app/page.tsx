@@ -133,8 +133,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500 mr-2">Market Sensitivity:</span>
-            <button className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-bold hover:bg-white/10 transition-colors">Global (Any)</button>
-            <button className="px-4 py-2 rounded-full border border-blue-500/40 bg-blue-500/10 text-blue-400 text-xs font-bold">Japanese (JP)</button>
+            <div className="px-4 py-2 rounded-full border border-blue-500/40 bg-blue-500/10 text-blue-400 text-xs font-bold">Global / All</div>
           </div>
         </div>
 

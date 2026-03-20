@@ -6,6 +6,7 @@ import ReportCard from "./ReportCard";
 
 export default function ReportStream() {
     const [reports, setReports] = useState<Report[]>([]);
+    const [activeCategory, setActiveCategory] = useState<string>("All");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +28,10 @@ export default function ReportStream() {
         }
         load();
     }, []);
+
+    const filteredReports = activeCategory === "All" 
+        ? reports 
+        : reports.filter(r => r.category === activeCategory || (activeCategory === "Energy" && r.market === "energy"));
 
     if (loading) {
         return (
@@ -66,11 +71,38 @@ export default function ReportStream() {
         );
     }
 
+    const categories = ["All", "AI/Tech", "Energy"];
+
     return (
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {reports.map((report, idx) => (
-                <ReportCard key={idx} report={report} />
-            ))}
+        <div>
+            <div className="flex flex-wrap items-center gap-2 mb-10">
+                <span className="text-xs text-gray-500 mr-2 uppercase tracking-widest font-bold">Filter By Category:</span>
+                {categories.map((cat) => (
+                    <button
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+                            activeCategory === cat
+                                ? (cat === "Energy" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : "bg-blue-500/20 text-blue-400 border border-blue-500/30")
+                                : "bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10"
+                        }`}
+                    >
+                        {cat}
+                    </button>
+                ))}
+            </div>
+
+            {filteredReports.length === 0 ? (
+                <div className="py-20 text-center border border-dashed border-white/10 rounded-3xl">
+                    <p className="text-gray-500 italic">No reports found for this category.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    {filteredReports.map((report, idx) => (
+                        <ReportCard key={idx} report={report} />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
