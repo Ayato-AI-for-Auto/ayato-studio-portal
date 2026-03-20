@@ -99,7 +99,7 @@ export async function fetchReports(): Promise<Report[]> {
     return (data as unknown as SupabaseReportResponse[]).map((r) => ({
         title: r.title,
         content: r.content_md,
-        category: r.raw_items?.category || 'News',
+        category: r.raw_items?.category || 'AI/Tech',
         market: r.raw_items?.market || 'General',
         language: r.language,
         score: 0,
@@ -140,7 +140,7 @@ export async function fetchReportByFilename(filename: string): Promise<Report | 
     return {
         title: typedData.title,
         content: typedData.content_md,
-        category: typedData.raw_items?.category || 'News',
+        category: typedData.raw_items?.category || 'AI/Tech',
         market: typedData.raw_items?.market || 'General',
         language: typedData.language,
         score: 0,
