@@ -4,17 +4,31 @@ import { useEffect, useState } from "react";
 import { fetchReports, Report } from "../lib/api";
 import ReportCard from "./ReportCard";
 
-export default function ReportStream() {
-    const [reports, setReports] = useState<Report[]>([]);
+interface ReportStreamProps {
+    initialReports?: Report[];
+}
+
+export default function ReportStream({ initialReports = [] }: ReportStreamProps) {
+    const [reports, setReports] = useState<Report[]>(initialReports);
     const [activeCategory, setActiveCategory] = useState<string>("All");
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(initialReports.length === 0);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        let isMounted = true;
+        
         async function load() {
+            if (initialReports.length > 0 && loading) {
+                setLoading(false);
+                return;
+            }
+
             try {
                 const data = await fetchReports();
-                setReports(data);
+                if (isMounted) {
+                    setReports(data);
+                    setLoading(false);
+                }
             } catch (e: any) {
                 console.error("Failed to load reports:", e);
                 setError(

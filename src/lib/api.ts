@@ -22,18 +22,12 @@ export interface LogicHiveFunction {
     created_at: string;
 }
 
-// 1. News/Reports Supabase Client (Project A - Legacy)
-const newsUrl = process.env.NEXT_PUBLIC_NEWS_SUPABASE_URL || '';
-const newsKey = process.env.NEXT_PUBLIC_NEWS_SUPABASE_ANON_KEY || '';
-// Initialize only if URL is present to prevent startup crash
-const newsSupabase = newsUrl ? createClient(newsUrl, newsKey) : null;
-
-// 2. LogicHive & Auth Supabase Client (Project B - New SaaS)
+// Single Unified Supabase Client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
 if (!supabaseUrl || !supabaseKey) {
-    console.warn('LogicHive Supabase config missing. Auth features will be disabled.');
+    console.warn('[API] NEXT_PUBLIC_SUPABASE_URL or ANON_KEY missing.');
 }
 
 export const supabase = (supabaseUrl && supabaseKey)
@@ -41,7 +35,7 @@ export const supabase = (supabaseUrl && supabaseKey)
         auth: {
             persistSession: true,
             autoRefreshToken: true,
-            storageKey: 'lh-auth-token' // Ensure it doesn't conflict with Project A
+            storageKey: 'ayato-auth-token'
         }
     })
     : null;
@@ -49,29 +43,14 @@ export const supabase = (supabaseUrl && supabaseKey)
 const logicHiveHubUrl = process.env.NEXT_PUBLIC_LOGICHIVE_HUB_URL || 'http://localhost:8000';
 console.log('[DEBUG] LogicHive Hub URL loaded:', logicHiveHubUrl);
 
-interface SupabaseReportResponse {
-    title: string;
-    content_md: string;
-    language: string;
-    item_id: string;
-    generated_at: string;
-    raw_items: {
-        category: string;
-        market: string;
-        url: string;
-    } | null;
-}
-
 export async function fetchReports(): Promise<Report[]> {
-    // Fallback to primary client if news-specific one is not configured
-    const client = newsSupabase || supabase;
-
-    if (!client) {
-        console.warn('Supabase client not initialized. Check NEXT_PUBLIC_SUPABASE_URL.');
+    if (!supabase) {
+        console.warn('[API] Supabase client not initialized.');
         return [];
     }
 
-    const { data, error } = await client
+    console.log('[API] Fetching reports from generated_reports...');
+    const { data, error } = await supabase
         .from('generated_reports')
         .select(`
             title,
@@ -79,41 +58,42 @@ export async function fetchReports(): Promise<Report[]> {
             language,
             item_id,
             generated_at,
-            raw_items (
-                category,
-                market,
-                url
-            )
+            category,
+            market
         `)
         .order('generated_at', { ascending: false })
         .limit(100);
 
     if (error) {
-        console.error('Supabase fetch error:', error);
-        throw new Error('Failed to fetch reports from Supabase');
+        console.error('[API] Supabase fetch error:', error);
+        throw new Error(`Supabase Error: ${error.message}`);
     }
 
-    if (!data) return [];
+    if (!data || data.length === 0) {
+        console.warn('[API] No data returned from generated_reports.');
+        return [];
+    }
 
-    // Map Supabase schema back to the UI expected Report interface
-    return (data as unknown as SupabaseReportResponse[]).map((r) => ({
+    console.log(`[API] Successfully fetched ${data.length} reports.`);
+
+    return (data as any[]).map((r) => ({
         title: r.title,
         content: r.content_md,
-        category: r.raw_items?.category || 'AI/Tech',
-        market: r.raw_items?.market || 'General',
+        category: r.category || 'AI/Tech',
+        market: r.market || 'General',
         language: r.language,
         score: 0,
         filename: r.item_id,
         timestamp: r.generated_at,
-        sourceUrl: r.raw_items?.url || undefined,
+        sourceUrl: undefined,
     }));
 }
 
 export async function fetchReportByFilename(filename: string): Promise<Report | null> {
-    const client = newsSupabase || supabase;
-    if (!client) return null;
+    if (!supabase) return null;
 
-    const { data, error } = await client
+    console.log(`[API] Fetching single report: ${filename}`);
+    const { data, error } = await supabase
         .from('generated_reports')
         .select(`
             title,
@@ -121,39 +101,40 @@ export async function fetchReportByFilename(filename: string): Promise<Report | 
             language,
             item_id,
             generated_at,
-            raw_items (
-                category,
-                market,
-                url
-            )
+            category,
+            market
         `)
         .eq('item_id', filename)
         .maybeSingle();
 
-    if (error || !data) {
-        console.error('Fetch report error:', error);
+    if (error) {
+        console.error('[API] Fetch report error:', error);
         return null;
     }
 
-    const typedData = data as unknown as SupabaseReportResponse;
+    if (!data) {
+        console.warn(`[API] Report not found: ${filename}`);
+        return null;
+    }
+
+    const r = data as any;
 
     return {
-        title: typedData.title,
-        content: typedData.content_md,
-        category: typedData.raw_items?.category || 'AI/Tech',
-        market: typedData.raw_items?.market || 'General',
-        language: typedData.language,
+        title: r.title,
+        content: r.content_md,
+        category: r.category || 'AI/Tech',
+        market: r.market || 'General',
+        language: r.language,
         score: 0,
-        filename: typedData.item_id,
-        timestamp: typedData.generated_at,
-        sourceUrl: typedData.raw_items?.url || undefined,
+        filename: r.item_id,
+        timestamp: r.generated_at,
+        sourceUrl: undefined,
     };
 }
 
 export async function fetchLogicHiveFunctions(): Promise<LogicHiveFunction[]> {
     try {
         const url = `${logicHiveHubUrl}/api/v1/functions/public/list?limit=20`;
-        console.log('[DEBUG] Fetching public functions from:', url);
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`Hub API error: ${response.statusText}`);
@@ -162,7 +143,6 @@ export async function fetchLogicHiveFunctions(): Promise<LogicHiveFunction[]> {
         return data || [];
     } catch (error) {
         console.error('LogicHive Hub fetch error:', error);
-        // Fallback or empty list
         return [];
     }
 }
@@ -205,24 +185,17 @@ export async function ensureOrganization(): Promise<{ orgKey: string | null; err
     if (!session) return { orgKey: null, error: 'No active session found' };
 
     try {
-        // 1. Check if org exists for THIS user
         const { org, error: fetchError } = await fetchCurrentOrganization();
-
         if (fetchError) throw new Error(fetchError);
+        if (org?.api_key_hash) return { orgKey: org.api_key_hash };
 
-        if (org?.api_key_hash) {
-            return { orgKey: org.api_key_hash };
-        }
-
-        // 2. Auto-Onboarding: Create new org linked to user
         const newApiKey = `lh_${Math.random().toString(36).substring(2, 15)}`;
-
         const { error: insertError } = await supabase
             .from('organizations')
             .insert({
                 name: `${session.user.email}'s Org`,
                 api_key_hash: newApiKey,
-                user_id: session.user.id, // Associate with user
+                user_id: session.user.id,
                 plan_type: 'free',
                 request_limit: 100,
                 status: 'active'
@@ -231,7 +204,6 @@ export async function ensureOrganization(): Promise<{ orgKey: string | null; err
             .single();
 
         if (insertError) throw insertError;
-
         return { orgKey: newApiKey };
     } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -242,23 +214,15 @@ export async function ensureOrganization(): Promise<{ orgKey: string | null; err
 
 export async function createCheckoutSession(priceId: string): Promise<{ url: string | null; error?: string }> {
     if (!supabase) return { url: null, error: 'Supabase client not initialized' };
-
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-        return { url: null, error: 'Please sign in to subscribe' };
-    }
+    if (!session) return { url: null, error: 'Please sign in to subscribe' };
 
-    // 2. Ensure Organization exists
     const { orgKey, error: orgError } = await ensureOrganization();
-    if (!orgKey) {
-        return { url: null, error: orgError || 'No organization found' };
-    }
+    if (!orgKey) return { url: null, error: orgError || 'No organization found' };
 
     try {
-        console.log('Requesting checkout via proxy...');
-
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout for proxy
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
         const response = await fetch('/api/logichive/checkout', {
             method: 'POST',
@@ -279,20 +243,15 @@ export async function createCheckoutSession(priceId: string): Promise<{ url: str
 
         if (!response.ok) {
             const errBody = await response.json().catch(() => ({}));
-            console.error('Hub API Error:', response.status, errBody);
             throw new Error(errBody.detail || `Checkout API error: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log('Checkout session created:', data.url || data.checkout_url);
         return { url: data.url || data.checkout_url };
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         console.error('Checkout creation error:', error);
-        if (error instanceof Error && error.name === 'AbortError') {
-            return { url: null, error: 'Connection timed out. Please check if the Hub backend is running.' };
-        }
-        return { url: null, error: errorMessage || 'Failed to initiate checkout' };
+        return { url: null, error: errorMessage };
     }
 }
 

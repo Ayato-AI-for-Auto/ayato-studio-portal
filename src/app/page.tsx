@@ -1,21 +1,9 @@
-'use client';
-
 import Link from "next/link";
 import ReportStream from "../components/ReportStream";
-import { usePathname } from 'next/navigation';
-import ReportDetailPageClientFallback from '@/components/ReportDetailPageClientFallback';
+import { fetchReports } from "../lib/api";
 
-export default function Home() {
-  const pathname = usePathname();
-
-  // Navigation Rescue: If we are on a report path but the server served index.html (fallback)
-  // we render the report content dynamically on the client.
-  if (pathname && pathname.startsWith('/reports/')) {
-    const id = pathname.replace('/reports/', '');
-    if (id) {
-      return <ReportDetailPageClientFallback id={id} />;
-    }
-  }
+export default async function Home() {
+  const reports = await fetchReports();
 
   return (
     <main className="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 overflow-x-hidden">
@@ -137,7 +125,7 @@ export default function Home() {
           </div>
         </div>
 
-        <ReportStream />
+        <ReportStream initialReports={reports} />
       </section>
 
       {/* Feature Highlight */}
