@@ -53,7 +53,7 @@ export async function fetchReports(): Promise<Report[]> {
         return [];
     }
 
-    console.log('[API] Fetching reports from generated_reports (with raw_items join)...');
+    console.log('[API] Fetching reports from generated_reports...');
     const { data, error } = await supabase
         .from('generated_reports')
         .select(`
@@ -62,7 +62,7 @@ export async function fetchReports(): Promise<Report[]> {
             language,
             item_id,
             generated_at,
-            raw_items (
+            raw_items!left (
                 category,
                 market,
                 url
@@ -73,11 +73,36 @@ export async function fetchReports(): Promise<Report[]> {
 
     if (error) {
         console.error('[API] Supabase fetch error:', error);
-        throw new Error(`Supabase Error: ${error.message}`);
+        // Fallback: try fetching without the join if metadata fails
+        const { data: fallbackData, error: fallbackError } = await supabase
+            .from('generated_reports')
+            .select('title, content_md, language, item_id, generated_at')
+            .order('generated_at', { ascending: false })
+            .limit(100);
+        
+        if (fallbackError) {
+            console.error('[API] Fallback fetch failed:', fallbackError);
+            throw new Error(`Supabase Error: ${fallbackError.message}`);
+        }
+        
+        console.log(`[API] Successfully fetched ${fallbackData?.length} reports (fallback mode).`);
+        return (fallbackData as any[]).map((r) => ({
+            title: r.title,
+            content: r.content_md,
+            category: 'Intelligence',
+            market: 'General',
+            language: r.language,
+            score: 0,
+            filename: r.item_id,
+            timestamp: r.generated_at,
+        }));
     }
 
     if (!data || data.length === 0) {
-        console.warn('[API] No reports returned from database.');
+        console.warn('[API] No reports returned from database. Checking for raw data presence...');
+        // Debug check to see if rows exist at all
+        const { count } = await supabase.from('generated_reports').select('*', { count: 'exact', head: true });
+        console.log(`[DEBUG] generated_reports total count: ${count}`);
         return [];
     }
 
