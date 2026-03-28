@@ -23,11 +23,19 @@ export default async function ReportDetailPage({ params }: PageProps) {
 export async function generateStaticParams() {
     try {
         const reports = await fetchReports();
-        return reports.map((report) => ({
+        const params = reports.map((report) => ({
             id: report.filename,
         }));
+        
+        // If empty, return a dummy param to prevent "missing generateStaticParams" error in some Next.js versions
+        if (params.length === 0) {
+            console.warn('generateStaticParams: No reports found, providing fallback path.');
+            return [{ id: 'draft-initial' }];
+        }
+        
+        return params;
     } catch (error) {
         console.error('Failed to generate static params for reports:', error);
-        return [];
+        return [{ id: 'draft-error' }]; // Return a safe fallback
     }
 }
