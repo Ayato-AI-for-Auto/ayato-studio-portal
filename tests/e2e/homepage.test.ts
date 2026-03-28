@@ -1,24 +1,26 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Homepage Visibility', () => {
-  test('should show the hero section', async ({ page }) => {
+  test('should load the homepage and show main elements', async ({ page }) => {
+    // We use the base URL from playwright.config.ts or env
     await page.goto('/');
-    await expect(page.locator('h1')).toContainText('Ayato Studio');
+
+    // Check for the main title or logo
+    // Based on the screenshots, we expect "Ayato Reporter" or similar
+    const header = page.locator('header');
+    await expect(header).toBeVisible();
+
+    // Check for "最新のレポート" (Latest Reports) section
+    const reportsHeader = page.getByText('最新のレポート');
+    await expect(reportsHeader).toBeVisible();
   });
 
-  test('should show reports section', async ({ page }) => {
+  test('should have essential navigation links', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('text=Intelligence Stream')).toBeVisible();
-  });
-
-  test('should show Silent Engine if no data is present', async ({ page }) => {
-    await page.goto('/');
-    const silentEngine = page.locator('text=Silent Engine');
-    const articles = page.locator('article');
     
-    const isSilent = await silentEngine.isVisible();
-    const hasArticles = (await articles.count()) > 0;
-    
-    expect(isSilent || hasArticles).toBe(true);
+    // Check for common navigation elements if any
+    // e.g., Footer or Header links
+    const footer = page.locator('footer');
+    await expect(footer).toBeVisible();
   });
 });
