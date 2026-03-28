@@ -41,7 +41,11 @@ export const supabase = (supabaseUrl && supabaseKey)
     : null;
 
 const logicHiveHubUrl = process.env.NEXT_PUBLIC_LOGICHIVE_HUB_URL || 'http://localhost:8000';
-console.log('[DEBUG] LogicHive Hub URL loaded:', logicHiveHubUrl);
+const isBuild = process.env.NODE_ENV === 'production' && typeof window === 'undefined';
+
+if (!isBuild) {
+    console.log('[DEBUG] LogicHive Hub URL loaded:', logicHiveHubUrl);
+}
 
 export async function fetchReports(): Promise<Report[]> {
     if (!supabase) {
@@ -49,7 +53,7 @@ export async function fetchReports(): Promise<Report[]> {
         return [];
     }
 
-    console.log('[API] Fetching reports from generated_reports...');
+    console.log('[API] Fetching reports from generated_reports (with raw_items join)...');
     const { data, error } = await supabase
         .from('generated_reports')
         .select(`
@@ -58,8 +62,11 @@ export async function fetchReports(): Promise<Report[]> {
             language,
             item_id,
             generated_at,
-            category,
-            market
+            raw_items (
+                category,
+                market,
+                url
+            )
         `)
         .order('generated_at', { ascending: false })
         .limit(100);
@@ -70,7 +77,7 @@ export async function fetchReports(): Promise<Report[]> {
     }
 
     if (!data || data.length === 0) {
-        console.warn('[API] No data returned from generated_reports.');
+        console.warn('[API] No reports returned from database.');
         return [];
     }
 
@@ -79,13 +86,13 @@ export async function fetchReports(): Promise<Report[]> {
     return (data as any[]).map((r) => ({
         title: r.title,
         content: r.content_md,
-        category: r.category || 'AI/Tech',
-        market: r.market || 'General',
+        category: r.raw_items?.category || 'AI/Tech',
+        market: r.raw_items?.market || 'General',
         language: r.language,
         score: 0,
         filename: r.item_id,
         timestamp: r.generated_at,
-        sourceUrl: undefined,
+        sourceUrl: r.raw_items?.url || undefined,
     }));
 }
 
@@ -101,8 +108,11 @@ export async function fetchReportByFilename(filename: string): Promise<Report | 
             language,
             item_id,
             generated_at,
-            category,
-            market
+            raw_items (
+                category,
+                market,
+                url
+            )
         `)
         .eq('item_id', filename)
         .maybeSingle();
@@ -122,17 +132,18 @@ export async function fetchReportByFilename(filename: string): Promise<Report | 
     return {
         title: r.title,
         content: r.content_md,
-        category: r.category || 'AI/Tech',
-        market: r.market || 'General',
+        category: r.raw_items?.category || 'AI/Tech',
+        market: r.raw_items?.market || 'General',
         language: r.language,
         score: 0,
         filename: r.item_id,
         timestamp: r.generated_at,
-        sourceUrl: undefined,
+        sourceUrl: r.raw_items?.url || undefined,
     };
 }
 
 export async function fetchLogicHiveFunctions(): Promise<LogicHiveFunction[]> {
+    if (isBuild) return []; // Skip hub fetch during build
     try {
         const url = `${logicHiveHubUrl}/api/v1/functions/public/list?limit=20`;
         const response = await fetch(url);
