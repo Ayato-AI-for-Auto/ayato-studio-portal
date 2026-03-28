@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom';
+import { expect, afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
 
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-key';
-process.env.NEXT_PUBLIC_NEWS_SUPABASE_URL = 'https://example-news.supabase.co';
-process.env.NEXT_PUBLIC_NEWS_SUPABASE_ANON_KEY = 'test-news-key';
+// Runs a cleanup after each test case (e.g. clearing jsdom)
+afterEach(() => {
+  cleanup();
+});
