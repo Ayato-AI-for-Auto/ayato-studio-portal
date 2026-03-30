@@ -82,13 +82,7 @@ export async function fetchReports(): Promise<Report[]> {
       generated_at,
       market,
       language,
-      content_md,
-      raw_items!left (
-        category,
-        market,
-        url,
-        content
-      )
+      content_md
     `)
     .order('generated_at', { ascending: false })
     .limit(100);

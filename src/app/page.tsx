@@ -2,8 +2,7 @@ import { Suspense } from "react";
 import { fetchReports } from "@/lib/api";
 import ReportCard from "@/components/ReportCard";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 60; // Revalidate every minute
+// Ayato Studio Portal - Static Export Mode
 
 async function ReportsList() {
   const reports = await fetchReports();
@@ -79,15 +78,7 @@ export default function Home() {
               </div>
           </div>
 
-          <Suspense fallback={
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="glass rounded-3xl h-[400px] animate-pulse border-white/5 bg-white/[0.02]" />
-              ))}
-            </div>
-          }>
-            <ReportsList />
-          </Suspense>
+          <ReportsList />
         </section>
 
         {/* Footer info */}
