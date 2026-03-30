@@ -1,4 +1,4 @@
-name: Deploy Studio Portal (Web)
+# Deploy Studio Portal (Web) - Triggered after Cloudflare migration fix
 
 on:
   push:
