@@ -1,15 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 
 export interface Report {
-    title: string;
-    content: string;
-    category: string;
-    market: string;
-    language: string;
-    score: number;
-    filename: string;
-    timestamp: string;
-    sourceUrl?: string;
+  id: string; 
+  filename: string; // The original URL or unique identifier (item_id in DB)
+  slug: string; // Used for safe FS paths and routing
+  title: string;
+  category: string;
+  language: string;
+  timestamp: string;
+  market: string;
+  author: string;
+  content: string;
+  sourceUrl?: string;
 }
 
 export interface LogicHiveFunction {
@@ -40,143 +42,138 @@ export const supabase = (supabaseUrl && supabaseKey)
     })
     : null;
 
-const logicHiveHubUrl = process.env.NEXT_PUBLIC_LOGICHIVE_HUB_URL || 'http://localhost:8000';
 const isBuild = process.env.NODE_ENV === 'production' && typeof window === 'undefined';
 
-if (!isBuild) {
-    console.log('[DEBUG] LogicHive Hub URL loaded:', logicHiveHubUrl);
+// Helper to create a safe slug from filename/URL (fixes Windows path length issues)
+function getSlug(filename: string): string {
+  if (!filename) return "report";
+  try {
+    const url = new URL(filename);
+    const pathParts = url.pathname.split('/').filter(Boolean);
+    const lastPart = pathParts[pathParts.length - 1] || "article";
+    let hash = 0;
+    for (let i = 0; i < filename.length; i++) {
+        hash = ((hash << 5) - hash) + filename.charCodeAt(i);
+        hash |= 0;
+    }
+    return `${lastPart.substring(0, 30)}-${Math.abs(hash).toString(36)}`;
+  } catch (e) {
+    // Not a URL, just sanitize
+    return filename.replace(/[^a-z0-9]/gi, '-').toLowerCase().substring(0, 50);
+  }
 }
 
 export async function fetchReports(): Promise<Report[]> {
-    if (!supabase) {
-        console.warn('[API] Supabase client not initialized.');
-        return [];
+  if (!supabase) {
+    console.warn('[API] Supabase client not initialized.');
+    return [];
+  }
+
+  console.log('[API] Fetching reports from generated_reports...');
+  
+  // 1. Attempt with join first (matching current DB schema: item_id, content_md, generated_at)
+  const { data, error } = await supabase
+    .from('generated_reports')
+    .select(`
+      id,
+      item_id,
+      title,
+      category,
+      generated_at,
+      market,
+      language,
+      content_md,
+      raw_items!left (
+        category,
+        market,
+        url,
+        content
+      )
+    `)
+    .order('generated_at', { ascending: false })
+    .limit(100);
+
+  if (error) {
+    console.warn('[API] Main fetch failed, attempting fallback (PGRST200 recovery):', error.message);
+    
+    // 2. Fallback: Fetch without join
+    const { data: fallbackData, error: fallbackError } = await supabase
+      .from('generated_reports')
+      .select('id, item_id, title, category, generated_at, market, language, content_md')
+      .order('generated_at', { ascending: false })
+      .limit(100);
+
+    if (fallbackError) {
+      console.error('[API] Fallback fetch also failed:', fallbackError.message);
+      return [];
     }
 
-    console.log('[API] Fetching reports from generated_reports...');
-    const { data, error } = await supabase
-        .from('generated_reports')
-        .select(`
-            title,
-            content_md,
-            language,
-            item_id,
-            generated_at,
-            raw_items!left (
-                category,
-                market,
-                url
-            )
-        `)
-        .order('generated_at', { ascending: false })
-        .limit(100);
-
-    if (error) {
-        console.error('[API] Supabase fetch error:', error);
-        // Fallback: try fetching without the join if metadata fails
-        const { data: fallbackData, error: fallbackError } = await supabase
-            .from('generated_reports')
-            .select('title, content_md, language, item_id, generated_at')
-            .order('generated_at', { ascending: false })
-            .limit(100);
-        
-        if (fallbackError) {
-            console.error('[API] Fallback fetch failed:', fallbackError);
-            throw new Error(`Supabase Error: ${fallbackError.message}`);
-        }
-        
-        console.log(`[API] Successfully fetched ${fallbackData?.length} reports (fallback mode).`);
-        return (fallbackData as any[]).map((r) => ({
-            title: r.title,
-            content: r.content_md,
-            category: 'Intelligence',
-            market: 'General',
-            language: r.language,
-            score: 0,
-            filename: r.item_id,
-            timestamp: r.generated_at,
-        }));
-    }
-
-    if (!data || data.length === 0) {
-        console.warn('[API] No reports returned from database. Checking for raw data presence...');
-        // Debug check to see if rows exist at all
-        const { count } = await supabase.from('generated_reports').select('*', { count: 'exact', head: true });
-        console.log(`[DEBUG] generated_reports total count: ${count}`);
-        return [];
-    }
-
-    console.log(`[API] Successfully fetched ${data.length} reports.`);
-
-    return (data as any[]).map((r) => ({
-        title: r.title,
-        content: r.content_md,
-        category: r.raw_items?.category || 'AI/Tech',
-        market: r.raw_items?.market || 'General',
-        language: r.language,
-        score: 0,
-        filename: r.item_id,
-        timestamp: r.generated_at,
-        sourceUrl: r.raw_items?.url || undefined,
+    return (fallbackData || []).map((r: any) => ({
+      id: String(r.id),
+      filename: r.item_id,
+      slug: getSlug(r.item_id),
+      title: r.title || 'Untitled Report',
+      category: r.category || 'General',
+      language: r.language || 'jp',
+      timestamp: r.generated_at || new Date().toISOString(),
+      market: r.market || 'Global',
+      author: 'Ayato Reporter',
+      content: r.content_md || '',
+      sourceUrl: undefined
     }));
+  }
+
+  // 3. Process main result
+  return (data || []).map((r: any) => ({
+    id: String(r.id),
+    filename: r.item_id,
+    slug: getSlug(r.item_id),
+    title: r.title || 'Untitled Report',
+    category: r.raw_items?.category || r.category || 'AI/Tech',
+    language: r.language || 'jp',
+    timestamp: r.generated_at || new Date().toISOString(),
+    market: r.raw_items?.market || r.market || 'Global',
+    author: 'Ayato Reporter',
+    content: r.content_md || r.raw_items?.content || '',
+    sourceUrl: r.raw_items?.url || undefined
+  }));
 }
 
-export async function fetchReportByFilename(filename: string): Promise<Report | null> {
-    if (!supabase) return null;
+export async function fetchReportByFilename(slugOrFilename: string): Promise<Report | null> {
+  if (!supabase) return null;
+  console.log(`[API] Fetching single report by slug or filename: ${slugOrFilename}`);
+  
+  const allReports = await fetchReports();
+  // Find by slug first (for new routing), then fallback to filename/item_id
+  const report = allReports.find(r => r.slug === slugOrFilename || r.filename === slugOrFilename);
+  
+  return report || null;
+}
 
-    console.log(`[API] Fetching single report: ${filename}`);
-    const { data, error } = await supabase
-        .from('generated_reports')
-        .select(`
-            title,
-            content_md,
-            language,
-            item_id,
-            generated_at,
-            raw_items (
-                category,
-                market,
-                url
-            )
-        `)
-        .eq('item_id', filename)
-        .maybeSingle();
+export async function createCheckoutSession(priceId: string): Promise<{ url?: string; error?: string }> {
+  if (!supabase) return { error: 'Supabase client not initialized' };
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+      return { error: 'Authentication required' };
+  }
 
-    if (error) {
-        console.error('[API] Fetch report error:', error);
-        return null;
-    }
-
-    if (!data) {
-        console.warn(`[API] Report not found: ${filename}`);
-        return null;
-    }
-
-    const r = data as any;
-
-    return {
-        title: r.title,
-        content: r.content_md,
-        category: r.raw_items?.category || 'AI/Tech',
-        market: r.raw_items?.market || 'General',
-        language: r.language,
-        score: 0,
-        filename: r.item_id,
-        timestamp: r.generated_at,
-        sourceUrl: r.raw_items?.url || undefined,
-    };
+  try {
+      // Integration point for LogicHive payment gateway
+      console.log(`[API] Initiating checkout for plan: ${priceId}`);
+      // Placeholder for actual stripe/payment redirect
+      return { error: 'Payment gateway integration in progress' };
+  } catch (err: any) {
+      return { error: err.message || 'Checkout failed' };
+  }
 }
 
 export async function fetchLogicHiveFunctions(): Promise<LogicHiveFunction[]> {
-    if (isBuild) return []; // Skip hub fetch during build
+    if (isBuild) return [];
     try {
-        const url = `${logicHiveHubUrl}/api/v1/functions/public/list?limit=20`;
+        const url = `${process.env.NEXT_PUBLIC_LOGICHIVE_HUB_URL || 'http://localhost:8000'}/api/v1/functions/public/list?limit=10`;
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Hub API error: ${response.statusText}`);
-        }
-        const data = await response.json();
-        return data || [];
+        if (!response.ok) throw new Error(`Hub API error: ${response.statusText}`);
+        return await response.json() || [];
     } catch (error) {
         console.error('LogicHive Hub fetch error:', error);
         return [];
@@ -208,86 +205,9 @@ export async function fetchCurrentOrganization(): Promise<{ org: Organization | 
 
         if (error) throw error;
         return { org: org as Organization };
-    } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    } catch (err: any) {
         console.error('Fetch Org error:', err);
-        return { org: null, error: errorMessage || 'Failed to fetch organization' };
-    }
-}
-
-export async function ensureOrganization(): Promise<{ orgKey: string | null; error?: string }> {
-    if (!supabase) return { orgKey: null, error: 'Supabase client not initialized' };
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return { orgKey: null, error: 'No active session found' };
-
-    try {
-        const { org, error: fetchError } = await fetchCurrentOrganization();
-        if (fetchError) throw new Error(fetchError);
-        if (org?.api_key_hash) return { orgKey: org.api_key_hash };
-
-        const newApiKey = `lh_${Math.random().toString(36).substring(2, 15)}`;
-        const { error: insertError } = await supabase
-            .from('organizations')
-            .insert({
-                name: `${session.user.email}'s Org`,
-                api_key_hash: newApiKey,
-                user_id: session.user.id,
-                plan_type: 'free',
-                request_limit: 100,
-                status: 'active'
-            })
-            .select()
-            .single();
-
-        if (insertError) throw insertError;
-        return { orgKey: newApiKey };
-    } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        console.error('Organization onboarding error:', err);
-        return { orgKey: null, error: errorMessage || 'Failed to onboard organization' };
-    }
-}
-
-export async function createCheckoutSession(priceId: string): Promise<{ url: string | null; error?: string }> {
-    if (!supabase) return { url: null, error: 'Supabase client not initialized' };
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return { url: null, error: 'Please sign in to subscribe' };
-
-    const { orgKey, error: orgError } = await ensureOrganization();
-    if (!orgKey) return { url: null, error: orgError || 'No organization found' };
-
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-        const response = await fetch('/api/logichive/checkout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Org-Key': orgKey,
-                'Authorization': `Bearer ${session.access_token}`
-            },
-            body: JSON.stringify({
-                price_id: priceId,
-                success_url: `${window.location.origin}/logichive?billing_success=true&session_id={CHECKOUT_SESSION_ID}`,
-                cancel_url: `${window.location.origin}/logichive?billing_cancelled=true`,
-            }),
-            signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-            const errBody = await response.json().catch(() => ({}));
-            throw new Error(errBody.detail || `Checkout API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return { url: data.url || data.checkout_url };
-    } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error('Checkout creation error:', error);
-        return { url: null, error: errorMessage };
+        return { org: null, error: err.message || 'Failed to fetch organization' };
     }
 }
 
@@ -305,9 +225,6 @@ export async function fetchOrganizationMetrics(): Promise<{ usage: number; limit
 
 export async function fetchOrganizationFunctions(): Promise<LogicHiveFunction[]> {
     if (!supabase) return [];
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return [];
-
     const { org } = await fetchCurrentOrganization();
     if (!org) return [];
 

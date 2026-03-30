@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Markdown from 'react-markdown';
+import { cn } from "@/lib/utils";
 import { Report } from '../lib/api';
 
 interface ReportViewProps {
@@ -14,33 +15,9 @@ export default function ReportView({ report }: ReportViewProps) {
             <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_50%,rgba(17,24,39,1)_0%,rgba(5,5,5,1)_100%)]" />
             <div className="fixed inset-0 -z-10 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-            <header className="border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-50">
-                <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-                    <Link href="/" className="flex items-center gap-4 group">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-xl shadow-lg shadow-blue-500/40 transform group-hover:rotate-6 transition-transform">
-                            A
-                        </div>
-                        <div className="hidden sm:block">
-                            <h1 className="text-xl font-bold tracking-tight">Ayato Studio</h1>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Back to Portal</p>
-                        </div>
-                    </Link>
-
-                    <nav className="flex items-center gap-4">
-                        <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-widest">
-                            {report.category}
-                        </span>
-                        <div className="h-8 w-px bg-white/10 mx-2" />
-                        <span className="text-sm text-gray-500 font-medium">
-                            {new Date(report.timestamp).toLocaleDateString()}
-                        </span>
-                    </nav>
-                </div>
-            </header>
-
-            <article className="mx-auto max-w-4xl px-6 py-24">
+            <article className="mx-auto max-w-4xl px-6 py-12 md:py-24">
                 {/* Hero Header */}
-                <div className="mb-16">
+                <div className="mb-12">
                     <div className="flex items-center gap-3 text-blue-500 font-bold text-xs uppercase tracking-[0.3em] mb-6">
                         <div className="h-px w-12 bg-blue-500/50" />
                         Intelligence Report
@@ -107,9 +84,109 @@ export default function ReportView({ report }: ReportViewProps) {
                             prose-ul:space-y-2
                             prose-hr:border-white/10 prose-hr:my-12
                             prose-a:text-blue-400 prose-a:no-underline hover:prose-a:text-blue-300
-                            prose-blockquote:border-blue-500/40 prose-blockquote:bg-blue-500/5 prose-blockquote:rounded-xl prose-blockquote:py-1 prose-blockquote:px-4
+                            prose-blockquote:border-l-4 prose-blockquote:border-blue-500/40 prose-blockquote:bg-blue-500/5 prose-blockquote:rounded-r-xl prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:my-8
                         ">
-                            <Markdown>{report.content}</Markdown>
+                            <Markdown
+                                components={{
+                                    blockquote: ({ node, ...props }) => {
+                                        const extractText = (nodes: any): string => {
+                                            return React.Children.toArray(nodes)
+                                                .map(child => {
+                                                    if (typeof child === 'string') return child;
+                                                    if (typeof child === 'number') return String(child);
+                                                    if ((child as any)?.props?.children) return extractText((child as any).props.children);
+                                                    return '';
+                                                })
+                                                .join('');
+                                        };
+
+                                        const content = extractText(props.children);
+                                        const alertType = /\[!(IMPORTANT|NOTE)\]/i.exec(content);
+
+                                        if (alertType) {
+                                            const type = alertType[1].toUpperCase();
+                                            const isImportant = type === "IMPORTANT";
+                                            const cleanContent = content
+                                                .replace(/^[>\s]*/, "")
+                                                .replace(/\[!(IMPORTANT|NOTE)\]/i, "")
+                                                .replace(/^[>\s]*/, "")
+                                                .trim();
+
+                                            return (
+                                                <div className={cn(
+                                                    "my-8 rounded-2xl border p-6 backdrop-blur-sm shadow-2xl",
+                                                    isImportant ? "border-red-500/40 bg-red-500/10" : "border-blue-500/40 bg-blue-500/10"
+                                                )}>
+                                                    <div className={cn(
+                                                        "flex items-center gap-2 font-black uppercase tracking-widest text-[10px] md:text-xs mb-4",
+                                                        isImportant ? "text-red-400" : "text-blue-400"
+                                                    )}>
+                                                        {isImportant ? (
+                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                                        ) : (
+                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                                        )}
+                                                        {isImportant ? "Priority Notice" : "Information"}
+                                                    </div>
+                                                    <div className="text-gray-100 leading-relaxed italic font-medium text-sm md:text-base">
+                                                        {cleanContent}
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                        return <blockquote className="border-l-4 border-white/10 pl-6 my-6 italic text-gray-400 font-medium" {...props} />;
+                                    },
+                                    p: ({ node, ...props }) => {
+                                        const extractText = (nodes: any): string => {
+                                            return React.Children.toArray(nodes)
+                                                .map(child => {
+                                                    if (typeof child === 'string') return child;
+                                                    if (typeof child === 'number') return String(child);
+                                                    if ((child as any)?.props?.children) return extractText((child as any).props.children);
+                                                    return '';
+                                                })
+                                                .join('');
+                                        };
+
+                                        const content = extractText(props.children);
+                                        const alertType = /^[>\s]*\[!(IMPORTANT|NOTE)\]/i.exec(content);
+                                        
+                                        if (alertType) {
+                                            const type = alertType[1].toUpperCase();
+                                            const isImportant = type === "IMPORTANT";
+                                            const cleanContent = content
+                                                .replace(/^[>\s]*\[!(IMPORTANT|NOTE)\]/i, "")
+                                                .replace(/^[>\s]*/, "")
+                                                .trim();
+
+                                            return (
+                                                <div className={cn(
+                                                    "my-8 rounded-2xl border p-6 backdrop-blur-sm shadow-2xl",
+                                                    isImportant ? "border-red-500/40 bg-red-500/10" : "border-blue-500/40 bg-blue-500/10"
+                                                )}>
+                                                    <div className={cn(
+                                                        "flex items-center gap-2 font-black uppercase tracking-widest text-[10px] md:text-xs mb-4",
+                                                        isImportant ? "text-red-400" : "text-blue-400"
+                                                    )}>
+                                                        {isImportant ? (
+                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                                        ) : (
+                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                                        )}
+                                                        {isImportant ? "Priority Notice" : "Information"}
+                                                    </div>
+                                                    <div className="text-gray-100 leading-relaxed italic font-medium text-sm md:text-base">
+                                                        {cleanContent}
+                                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                        return <p className="mb-6 last:mb-0 leading-relaxed text-gray-300 font-medium" {...props} />;
+                                    }
+                                }}
+                            >
+                                {report.content}
+                            </Markdown>
                         </div>
                     </div>
                 </div>
@@ -127,17 +204,6 @@ export default function ReportView({ report }: ReportViewProps) {
                     </Link>
                 </div>
             </article>
-
-            <footer className="mt-24 border-t border-white/5 py-12 bg-black/40 backdrop-blur-xl">
-                <div className="mx-auto max-w-7xl px-6 flex justify-between items-center text-gray-500 text-xs">
-                    <p>&copy; 2026 Ayato Studio. All rights reserved.</p>
-                    <div className="flex gap-6">
-                        <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
-                        <Link href="/terms" className="hover:text-white">Terms of Service</Link>
-                        <Link href="/" className="hover:text-white">Back to Hub</Link>
-                    </div>
-                </div>
-            </footer>
         </main>
     );
 }

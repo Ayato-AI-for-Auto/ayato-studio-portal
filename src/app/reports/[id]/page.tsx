@@ -1,33 +1,91 @@
-import React from 'react';
-import { fetchReportByFilename, fetchReports } from '@/lib/api';
+import { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+
+import { fetchReportByFilename, fetchReports } from '@/lib/api';
+import { cn, formatDate } from '@/lib/utils';
+import { Icons } from '@/components/icons';
 import ReportView from '@/components/ReportView';
 
 interface PageProps {
-    params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>;
 }
 
 export const dynamicParams = false;
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const decodedId = decodeURIComponent(id);
+  const report = await fetchReportByFilename(decodedId);
+  
+  return {
+    title: report ? `${report.title} | Ayato Studio Reports` : 'Report Not Found',
+    description: report ? report.title : 'Market Intelligence Deep-Dive',
+  };
+}
+
 export default async function ReportDetailPage({ params }: PageProps) {
-    const { id } = await params;
-    const report = await fetchReportByFilename(id);
+  const { id } = await params;
+  const decodedId = decodeURIComponent(id);
+  const report = await fetchReportByFilename(decodedId);
 
-    if (!report) {
-        notFound();
-    }
+  if (!report) {
+    notFound();
+  }
 
-    return <ReportView report={report} />;
+  return (
+    <article className="container relative max-w-3xl py-6 lg:py-10 mx-auto px-4 sm:px-8">
+      <Link
+        href="/reports"
+        className={cn(
+          "absolute left-[-200px] top-14 hidden xl:inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+        )}
+      >
+        <Icons.chevronLeft className="mr-2 h-4 w-4" />
+        See all reports
+      </Link>
+      <div>
+        <time
+          dateTime={report.timestamp}
+          className="block text-sm text-muted-foreground"
+        >
+          Published on {formatDate(report.timestamp)}
+        </time>
+        <h1 className="mt-2 inline-block font-heading text-4xl leading-tight lg:text-5xl font-bold">
+          {report.title}
+        </h1>
+        <div className="mt-4 flex items-center space-x-3">
+            <span className="rounded-md bg-muted px-2 py-1 text-sm font-medium">
+                {report.category}
+            </span>
+            <span className="text-sm text-muted-foreground">
+                Market: {report.market}
+            </span>
+        </div>
+      </div>
+      <hr className="my-8" />
+      
+      {/* デフォルトエクスポートを正しくインポートして適用 */}
+      <ReportView report={report} />
+      
+      <hr className="my-8" />
+      <div className="flex justify-center py-6 lg:py-10">
+        <Link href="/reports" className={cn("inline-flex items-center justify-center rounded-md border border-input bg-background px-8 h-11 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground")}>
+          <Icons.chevronLeft className="mr-2 h-4 w-4" />
+          See all reports
+        </Link>
+      </div>
+    </article>
+  );
 }
 
 export async function generateStaticParams() {
     try {
         const reports = await fetchReports();
         const params = reports.map((report) => ({
-            id: report.filename,
+            id: report.slug, // Use global safety slug
         }));
         
-        // If empty, return a dummy param to prevent "missing generateStaticParams" error in some Next.js versions
         if (params.length === 0) {
             console.warn('generateStaticParams: No reports found, providing fallback path.');
             return [{ id: 'draft-initial' }];
@@ -36,6 +94,6 @@ export async function generateStaticParams() {
         return params;
     } catch (error) {
         console.error('Failed to generate static params for reports:', error);
-        return [{ id: 'draft-error' }]; // Return a safe fallback
+        return [{ id: 'draft-error' }]; 
     }
 }

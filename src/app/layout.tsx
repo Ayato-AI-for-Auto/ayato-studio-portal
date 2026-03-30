@@ -1,24 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import Analytics from "@/components/Analytics";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { cn } from "@/lib/utils";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Ayato Studio - AI Market Intelligence Portal",
-  description: "Next-gen AI Market Intelligence and Automated Reporting.",
-  verification: {
-    google: process.env.NEXT_PUBLIC_GSC_ID,
-  },
+  title: "Ayato Studio Portal | Market Intelligence AI",
+  description: "AI-driven market intelligence portal for the latest tech news and deep research reports.",
+  keywords: ["AI", "Tech", "Intelligence", "Market Analysis", "Research"],
+  authors: [{ name: "Ayato Studio" }],
 };
 
 export default function RootLayout({
@@ -27,12 +21,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Analytics />
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn(
+        "min-h-screen bg-background font-sans antialiased",
+        inter.className
+      )}>
+        <div className="relative flex min-h-screen flex-col">
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <SiteFooter />
+        </div>
       </body>
     </html>
   );

@@ -39,13 +39,13 @@ export default function AuthStatus() {
         checkUser();
 
         // Listen for all auth events to keep header in sync
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        const subscription = supabase.auth.onAuthStateChange(
             (event: string, session: any) => {
                 console.log('Auth event change:', event);
                 setUser(session?.user || null);
                 if (event === 'SIGNED_IN') setShowForm(false);
             }
-        );
+        ).data.subscription;
 
         // Listener for manual triggers (e.g. from CheckoutButton)
         const openAuthHandler = (e: Event) => {

@@ -42,10 +42,11 @@ jobs:
           NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
           NEXT_PUBLIC_ADS_ID: ${{ secrets.NEXT_PUBLIC_ADS_ID }}
 
-      - name: Deploy to Firebase
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.GCP_SA_KEY }}
-          projectId: ${{ secrets.GCP_PROJECT_ID }}
-          channelId: live
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ayato-studio-portal # Cloudflare Pages上のプロジェクト名
+          directory: out # Next.js SSGの出力ディレクトリ
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
