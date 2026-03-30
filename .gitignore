@@ -4,10 +4,14 @@ out/
 build/
 .env*
 !.env.example
+# Temporary files
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+*_master.txt
+result.txt
+lint_output*.txt
+build_error*.txt
+
+# IDEs
 .vscode/
 .idea/
 .DS_Store
