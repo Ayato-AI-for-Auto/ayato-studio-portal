@@ -10,6 +10,7 @@ build/
 result.txt
 lint_output*.txt
 build_error*.txt
+.ruff_cache/
 
 # IDEs
 .vscode/
