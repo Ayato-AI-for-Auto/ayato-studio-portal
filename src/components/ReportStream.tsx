@@ -15,7 +15,7 @@ export default function ReportStream({ initialReports = [] }: ReportStreamProps)
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        let isMounted = true;
+        const isMounted = true;
         
         async function load() {
             if (initialReports.length > 0 && loading) {

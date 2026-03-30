@@ -59,7 +59,7 @@ async function verify() {
 
   // 4. Test RLS (Select one row)
   console.log('\n[4] Testing RLS on generated_reports...');
-  const { data: rlsData, error: rlsErr } = await supabase
+  const { error: rlsErr } = await supabase
     .from('generated_reports')
     .select('*')
     .limit(1);
