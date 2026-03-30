@@ -17,7 +17,6 @@ export default function ReportDetailPageClientFallback({ id }: Props) {
 
     useEffect(() => {
         let isMounted = true;
-        setLoading(true);
 
         fetchReportByFilename(id)
             .then((data) => {

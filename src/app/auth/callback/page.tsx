@@ -23,7 +23,9 @@ export default function AuthCallbackPage() {
         let isMounted = true;
 
         if (!supabase) {
-            if (isMounted) setError('Supabase client not initialized.');
+            setTimeout(() => {
+                if (isMounted) setError('Supabase client not initialized.');
+            }, 0);
             return () => { isMounted = false; };
         }
 

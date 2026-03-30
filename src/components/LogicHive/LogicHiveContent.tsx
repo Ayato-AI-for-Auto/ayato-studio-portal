@@ -15,7 +15,9 @@ export default function LogicHiveContent({ publicFunctions }: LogicHiveContentPr
     useEffect(() => {
         let isMounted = true;
         if (!supabase) {
-            if (isMounted) setLoading(false);
+            setTimeout(() => {
+                if (isMounted) setLoading(false);
+            }, 0);
             return () => { isMounted = false; };
         }
 

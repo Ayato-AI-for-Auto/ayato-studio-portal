@@ -45,5 +45,5 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
-      - name: Run Next.js Linting
-        run: npx next lint
+      - name: Run ESLint
+        run: npx eslint src
