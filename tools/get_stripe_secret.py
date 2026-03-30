@@ -2,7 +2,7 @@ import re
 import subprocess
 import time
 
-key = "sk_test_51SoSqbPCeWLY3R8VA4gRNXB0rPY9KA0OtjIzxuWI0ALiumpcpjCvsKmSxYUvFOpvrnGqEhyedQC5UMSJqFv6ELQV00LCfO8HYY"
+key = "sk_test_51SoSqbPCeWLY3R8VA4gRNXB0rPY9KA0OtjIzxuWI0ALiumpcpjCvsKmSxYUvFOpvrnGqEhyedQC5UMSJqFv6ELQV00LCfO8HYY"  # noqa: E501
 cmd = [
     r".\stripe_cli\stripe.exe",
     "listen",

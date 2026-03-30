@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-key = "sk_test_51SoSqbPCeWLY3R8VA4gRNXB0rPY9KA0OtjIzxuWI0ALiumpcpjCvsKmSxYUvFOpvrnGqEhyedQC5UMSJqFv6ELQV00LCfO8HYY"
+key = "sk_test_51SoSqbPCeWLY3R8VA4gRNXB0rPY9KA0OtjIzxuWI0ALiumpcpjCvsKmSxYUvFOpvrnGqEhyedQC5UMSJqFv6ELQV00LCfO8HYY"  # noqa: E501
 # Try both CLI versions, newest first
 for cli in [r".\stripe_cli_latest\stripe.exe", r".\stripe_cli\stripe.exe"]:
     if not os.path.exists(cli):
