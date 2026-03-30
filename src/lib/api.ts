@@ -123,13 +123,13 @@ export async function fetchReports(): Promise<Report[]> {
     filename: r.item_id,
     slug: getSlug(r.item_id),
     title: r.title || 'Untitled Report',
-    category: r.raw_items?.category || r.category || 'AI/Tech',
+    category: r.category || 'AI/Tech',
     language: r.language || 'jp',
     timestamp: r.generated_at || new Date().toISOString(),
-    market: r.raw_items?.market || r.market || 'Global',
+    market: r.market || 'Global',
     author: 'Ayato Reporter',
-    content: r.content_md || r.raw_items?.content || '',
-    sourceUrl: r.raw_items?.url || undefined
+    content: r.content_md || '',
+    sourceUrl: undefined
   }));
 }
 

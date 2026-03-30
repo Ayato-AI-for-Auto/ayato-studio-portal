@@ -43,26 +43,18 @@ async function verify() {
     console.log(`Total raw_items in database: ${rawCount}`);
   }
 
-  // 3. Test the JOIN query (Current Production Logic)
-  console.log('\n[3] Testing Join Query (!left)...');
-  const { data: joinData, error: joinErr } = await supabase
+  // 3. Test simple query (Stable)
+  console.log('\n[3] Testing Simple Query (Stable)...');
+  const { data, error } = await supabase
     .from('generated_reports')
-    .select(`
-      title,
-      item_id,
-      raw_items!left (
-        id,
-        category,
-        market
-      )
-    `)
+    .select('title, item_id, category, market')
     .limit(3);
 
-  if (joinErr) {
-    console.error('Join Query Error:', joinErr);
+  if (error) {
+    console.error('Query Error:', error);
   } else {
-    console.log('Join Result Samples:');
-    console.log(JSON.stringify(joinData, null, 2));
+    console.log('Query Result Samples:');
+    console.log(JSON.stringify(data, null, 2));
   }
 
   // 4. Test RLS (Select one row)
