@@ -42,11 +42,24 @@ jobs:
           NEXT_PUBLIC_GA_ID: ${{ secrets.NEXT_PUBLIC_GA_ID }}
           NEXT_PUBLIC_ADS_ID: ${{ secrets.NEXT_PUBLIC_ADS_ID }}
 
+      - name: Debug Secret Availability (Check only)
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "❌ CLOUDFLARE_API_TOKEN is NOT set!"
+          else
+            echo "✅ CLOUDFLARE_API_TOKEN is found."
+          fi
+          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "❌ CLOUDFLARE_ACCOUNT_ID is NOT set!"
+          else
+            echo "✅ CLOUDFLARE_ACCOUNT_ID is found."
+          fi
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ayato-studio-portal # Cloudflare Pages上のプロジェクト名
+          projectName: ayato-studio # Cloudflare Pages上の正確なプロジェクト名
           directory: out # Next.js SSGの出力ディレクトリ
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

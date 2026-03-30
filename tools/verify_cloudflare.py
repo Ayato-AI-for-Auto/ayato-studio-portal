@@ -1,5 +1,8 @@
 import os
-import requests
+import json
+import ssl
+import urllib.request
+import urllib.error
 import sys
 
 def load_env_local(file_path):
@@ -32,13 +35,19 @@ def verify_cloudflare(token, account_id):
     # Step 1: Verify Token
     print(f"\n[Step 1] Verifying API Token...")
     try:
-        response = requests.get("https://api.cloudflare.com/client/v4/user/tokens/verify", headers=headers)
-        result = response.json()
-        if response.status_code == 200 and result.get("success"):
-            print("✅ API Token is valid!")
-        else:
-            print(f"❌ API Token Verification Failed: {result.get('errors')}")
-            return
+        req = urllib.request.Request("https://api.cloudflare.com/client/v4/user/tokens/verify", headers=headers)
+        with urllib.request.urlopen(req) as response:
+            result = json.loads(response.read().decode())
+            if response.status == 200 and result.get("success"):
+                print("✅ API Token is valid!")
+            else:
+                print(f"❌ API Token Verification Failed: {result.get('errors')}")
+                return
+    except urllib.error.HTTPError as e:
+        status = e.code
+        body = json.loads(e.read().decode())
+        print(f"❌ API Token Verification Failed (Status {status}): {body.get('errors')}")
+        return
     except Exception as e:
         print(f"❌ Connection Error (Step 1): {e}")
         return
@@ -47,19 +56,34 @@ def verify_cloudflare(token, account_id):
     print(f"\n[Step 2] Verifying Access to Pages Projects for Account: {account_id}")
     try:
         url = f"https://api.cloudflare.com/client/v4/accounts/{account_id}/pages/projects"
-        response = requests.get(url, headers=headers)
-        result = response.json()
-        if response.status_code == 200:
-            print(f"✅ Successfully accessed Account ID!")
-            projects = result.get("result", [])
-            print(f"   Found {len(projects)} Pages projects.")
-            for p in projects:
-                print(f"   - {p.get('name')}")
-        else:
-            print(f"❌ Account Access Failed (Status {response.status_code})")
-            print(f"   Details: {result.get('errors')}")
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req) as response:
+            result = json.loads(response.read().decode())
+            if response.status == 200:
+                print(f"✅ Successfully accessed Account ID!")
+                projects = result.get("result", [])
+                print(f"   Found {len(projects)} Pages projects.")
+                for p in projects:
+                    print(f"   - {p.get('name')}")
+            else:
+                print(f"❌ Account Access Failed (Status {response.status})")
+                print(f"   Details: {result.get('errors')}")
+    except urllib.error.HTTPError as e:
+        status = e.code
+        body = json.loads(e.read().decode())
+        print(f"❌ Account Access Failed (Status {status}): {body.get('errors')}")
     except Exception as e:
         print(f"❌ Connection Error (Step 2): {e}")
+
+if __name__ == "__main__":
+    # .env.local から読み込み
+    env_file = os.path.join(os.path.dirname(__file__), "..", ".env.local")
+    env = load_env_local(env_file)
+    
+    cf_token = env.get("CLOUDFLARE_API_TOKEN")
+    cf_account_id = env.get("CLOUDFLARE_ACCOUNT_ID")
+    
+    verify_cloudflare(cf_token, cf_account_id)
 
 if __name__ == "__main__":
     # .env.local から読み込み
