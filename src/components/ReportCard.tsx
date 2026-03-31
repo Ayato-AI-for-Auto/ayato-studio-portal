@@ -9,7 +9,7 @@ export default function ReportCard({ report }: { report: Report }) {
         <Link
             href={`/reports/${report.slug}`}
             className={cn(
-                "group relative block overflow-hidden rounded-3xl border border-white/5 bg-white/[0.03] p-6 backdrop-blur-3xl transition-all duration-500 hover:bg-white/[0.08] hover:scale-[1.02] hover:border-white/20",
+                "group relative block overflow-hidden rounded-3xl border border-white/10 bg-white/[0.05] p-6 backdrop-blur-3xl transition-all duration-500 hover:bg-white/[0.08] hover:scale-[1.02] hover:border-white/20",
                 "shadow-2xl flex flex-col h-full",
                 isEnergy ? "hover:shadow-amber-500/20" : "hover:shadow-blue-500/20"
             )}
@@ -54,7 +54,7 @@ export default function ReportCard({ report }: { report: Report }) {
                 {report.content.replace(/[#*`>!\[\]]/g, "").slice(0, 160).trim()}...
             </p>
 
-            <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
+            <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/10">
                 <div className="flex items-center gap-4">
                     <div className="flex flex-col">
                         <span className="text-[9px] text-gray-600 font-black uppercase tracking-[0.2em] mb-0.5 md:mb-1">Market</span>
