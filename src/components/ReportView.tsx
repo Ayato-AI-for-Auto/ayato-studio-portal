@@ -190,19 +190,6 @@ export default function ReportView({ report }: ReportViewProps) {
                         </div>
                     </div>
                 </div>
-
-                {/* CTA / Footer of Article */}
-                <div className="mt-16 p-8 rounded-[2.5rem] border border-blue-500/20 bg-blue-500/5 flex flex-col items-center text-center">
-                    <div className="h-16 w-16 rounded-3xl bg-blue-600/20 flex items-center justify-center text-blue-500 mb-6 font-black text-2xl">A</div>
-                    <h4 className="text-2xl font-black mb-4">Want deeper insights?</h4>
-                    <p className="text-gray-400 max-w-md mb-8">
-                        Our intelligence engine processes thousands of data points daily.
-                        Subscribe to our enterprise plan for real-time alerts and research tools.
-                    </p>
-                    <Link href="/logichive" className="rounded-full bg-blue-600 px-8 py-4 text-sm font-black text-white transition-all hover:bg-blue-500 hover:scale-105 active:scale-95 shadow-xl shadow-blue-600/20">
-                        Get Started with LogicHive
-                    </Link>
-                </div>
             </article>
         </main>
     );

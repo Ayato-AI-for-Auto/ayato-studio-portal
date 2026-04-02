@@ -12,12 +12,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 1,
         },
         {
-            url: 'https://ayato-studio.ai/logichive',
-            lastModified: new Date(),
-            changeFrequency: 'weekly',
-            priority: 0.9,
-        },
-        {
             url: 'https://ayato-studio.ai/terms',
             lastModified: new Date(),
             changeFrequency: 'monthly',

@@ -133,7 +133,7 @@ export default function PrivacyPage() {
                             本ポリシーに関するお問い合わせは、以下よりご連絡ください。
                         </p>
                         <p className="mt-4 text-blue-400 font-bold">
-                            Email: contact@ayato-studio.ai
+                            Email: Cwblog69@gmail.com
                         </p>
                     </section>
                 </div>

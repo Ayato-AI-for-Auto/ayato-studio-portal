@@ -14,15 +14,6 @@ export interface Report {
   sourceUrl?: string;
 }
 
-export interface LogicHiveFunction {
-    id: string;
-    name: string;
-    code: string;
-    description: string;
-    tags: string[];
-    reliability_score: number;
-    created_at: string;
-}
 
 // Single Unified Supabase Client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -144,35 +135,6 @@ export async function fetchReportByFilename(slugOrFilename: string): Promise<Rep
   return report || null;
 }
 
-export async function createCheckoutSession(priceId: string): Promise<{ url?: string; error?: string }> {
-  if (!supabase) return { error: 'Supabase client not initialized' };
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-      return { error: 'Authentication required' };
-  }
-
-  try {
-      // Integration point for LogicHive payment gateway
-      console.log(`[API] Initiating checkout for plan: ${priceId}`);
-      // Placeholder for actual stripe/payment redirect
-      return { error: 'Payment gateway integration in progress' };
-  } catch (err: any) {
-      return { error: err.message || 'Checkout failed' };
-  }
-}
-
-export async function fetchLogicHiveFunctions(): Promise<LogicHiveFunction[]> {
-    if (isBuild) return [];
-    try {
-        const url = `${process.env.NEXT_PUBLIC_LOGICHIVE_HUB_URL || 'http://localhost:8000'}/api/v1/functions/public/list?limit=10`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Hub API error: ${response.statusText}`);
-        return await response.json() || [];
-    } catch (error) {
-        console.error('LogicHive Hub fetch error:', error);
-        return [];
-    }
-}
 
 export interface Organization {
     id: string;
@@ -217,22 +179,3 @@ export async function fetchOrganizationMetrics(): Promise<{ usage: number; limit
     };
 }
 
-export async function fetchOrganizationFunctions(): Promise<LogicHiveFunction[]> {
-    if (!supabase) return [];
-    const { org } = await fetchCurrentOrganization();
-    if (!org) return [];
-
-    try {
-        const { data, error } = await supabase
-            .from('logichive_functions')
-            .select('*')
-            .eq('organization_id', org.id)
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        return data || [];
-    } catch (err) {
-        console.error('Fetch Organization Functions error:', err);
-        return [];
-    }
-}

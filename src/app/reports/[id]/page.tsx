@@ -18,9 +18,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const decodedId = decodeURIComponent(id);
   const report = await fetchReportByFilename(decodedId);
   
+  const description = report 
+    ? report.content.replace(/[#*`>!\[\]]/g, "").slice(0, 160).trim() + "..."
+    : 'Market Intelligence Deep-Dive';
+
   return {
     title: report ? `${report.title} | Ayato Studio Reports` : 'Report Not Found',
-    description: report ? report.title : 'Market Intelligence Deep-Dive',
+    description: description,
   };
 }
 

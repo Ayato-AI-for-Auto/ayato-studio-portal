@@ -59,7 +59,7 @@ export default function TokuteiPage() {
                                 </tr>
                                 <tr className="border-b border-white/5">
                                     <th className="p-8 md:p-10 bg-white/[0.01] font-black text-gray-400 uppercase tracking-widest text-[10px]">メールアドレス</th>
-                                    <td className="p-8 md:p-10 text-blue-400 font-medium">contact@ayato-studio.ai</td>
+                                    <td className="p-8 md:p-10 text-blue-400 font-medium">Cwblog69@gmail.com</td>
                                 </tr>
                                 <tr className="border-b border-white/5">
                                     <th className="p-8 md:p-10 bg-white/[0.01] font-black text-gray-400 uppercase tracking-widest text-[10px]">販売価格</th>
@@ -83,7 +83,7 @@ export default function TokuteiPage() {
                                 </tr>
                                 <tr>
                                     <th className="p-8 md:p-10 bg-white/[0.01] font-black text-gray-400 uppercase tracking-widest text-[10px]">動作環境</th>
-                                    <td className="p-8 md:p-10 text-gray-200 font-medium">最新のWebブラウザ、および LogicHive Edge クライアント (.exe) の動作要件に準じます。</td>
+                                    <td className="p-8 md:p-10 text-gray-200 font-medium">最新のWebブラウザ（Chrome, Firefox, Safari, Edge等）の動作要件に準じます。</td>
                                 </tr>
                             </tbody>
                         </table>

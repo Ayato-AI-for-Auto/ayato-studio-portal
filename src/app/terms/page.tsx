@@ -42,8 +42,7 @@ export default function TermsPage() {
                         <h3 className="text-2xl font-black mb-6 text-blue-400">第1条 - サービスの概要</h3>
                         <div className="space-y-4 text-gray-300 leading-relaxed">
                             <p>
-                                Ayato Studio（以下「本サービス」）は、AIを活用した市場インテリジェンスレポートの生成・配信、
-                                および LogicHive プラットフォームを通じた開発者向けツールの提供を行うサービスです。
+                                Ayato Studio（以下「本サービス」）は、AIを活用した市場インテリジェンスレポートの生成・配信を行うサービスです。
                             </p>
                             <p>
                                 本サービスは Ayato Studio 運営者（以下「運営者」）が運営しており、
@@ -57,9 +56,8 @@ export default function TermsPage() {
                         <h3 className="text-2xl font-black mb-6 text-blue-400">第2条 - 免責事項および無保証</h3>
                         <div className="space-y-4 text-gray-300 leading-relaxed">
                             <p>
-                                本サービス（Ayato Studio および LogicHive）で提供されるレポート、分析記事、および
-                                <strong className="text-white">LogicHive を通じて提供・共有される全てのコード（関数）</strong>は、
-                                AIによって生成されたもの、またはユーザーによって登録されたものであり、
+                                本サービス（Ayato Studio）で提供されるレポート、分析記事は、
+                                AIによって生成されたものであり、
                                 <strong className="text-blue-400">「現状有姿（As-Is）」</strong>で提供されます。
                             </p>
                             <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/20">
@@ -153,7 +151,7 @@ export default function TermsPage() {
                             本規約に関するお問い合わせは、以下よりご連絡ください。
                         </p>
                         <p className="mt-4 text-blue-400 font-bold">
-                            Email: contact@ayato-studio.ai
+                            Email: Cwblog69@gmail.com
                         </p>
                     </section>
                 </div>
@@ -166,7 +164,7 @@ export default function TermsPage() {
                         <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
                         <Link href="/tokutei" className="hover:text-white">特定商取引法に基づく表記</Link>
                         <span className="text-white font-bold">Terms of Service</span>
-                        <Link href="/" className="hover:text-white">Back to Hub</Link>
+                        <Link href="/" className="hover:text-white">Home</Link>
                     </div>
                 </div>
             </footer>
