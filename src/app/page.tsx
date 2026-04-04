@@ -1,17 +1,17 @@
 import { Suspense } from "react";
 import { fetchReports } from "@/lib/api";
-import { getLocalContent } from "@/lib/local-content";
+import { getLocalArticles, LocalArticle } from "@/lib/local-content";
 import ReportCard from "@/components/ReportCard";
 import Link from 'next/link';
 
 // Home Page - Ayato Studio Intelligence Portal
 
 async function ServicesSection() {
-  const services = getLocalContent('services').slice(0, 3);
+  const services = getLocalArticles('services').slice(0, 3);
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-      {services.map((service) => (
+      {services.map((service: LocalArticle) => (
         <Link key={service.slug} href={`/services/${service.slug}`} className="group p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 hover:border-blue-500/30 transition-all duration-500">
           <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -33,11 +33,11 @@ async function ServicesSection() {
 async function FeaturedBlogSection() {
   const aiReports = await fetchReports();
   const weekly = aiReports.filter(r => r.category === "Weekly").slice(0, 1);
-  const local = getLocalContent('blog').slice(0, 1);
-
+  const local = getLocalArticles('blog').slice(0, 1);
+ 
   const featured = [
-    ...weekly.map(r => ({ ...r, type: 'Weekly Review', href: `/reports/${r.slug}` })),
-    ...local.map(l => ({ ...l, type: 'Human Insight', href: `/blog/${l.slug}`, timestamp: l.date }))
+    ...weekly.map(r => ({ ...r, type: 'Weekly Review', href: `/reports/${r.slug}`, timestamp: r.timestamp })),
+    ...local.map((l: LocalArticle) => ({ ...l, type: 'Human Insight', href: `/blog/${l.slug}`, timestamp: l.date }))
   ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return (
@@ -62,16 +62,41 @@ async function FeaturedBlogSection() {
   );
 }
 
-async function ReportsList() {
+async function ReportsSection() {
   const reports = await fetchReports();
-  const fastNews = reports.filter(r => r.category !== "Weekly").slice(0, 6);
+  const fastNews = reports.filter(r => r.category !== "Weekly");
 
-  if (fastNews.length === 0) return null;
+  const techReports = fastNews.filter(r => (r.market || "").toLowerCase() === "tech").slice(0, 3);
+  const financeReports = fastNews.filter(r => (r.market || "").toLowerCase() === "finance").slice(0, 3);
+  const energyReports = fastNews.filter(r => (r.market || "").toLowerCase() === "energy").slice(0, 3);
+
+  const sections = [
+    { title: "Digital Frontier", subtitle: "Tech & AI Research", items: techReports, color: "text-blue-500", border: "border-blue-500/10" },
+    { title: "Strategic Finance", subtitle: "Market & Economy", items: financeReports, color: "text-amber-500", border: "border-amber-500/10" },
+    { title: "Energy Paradigm", subtitle: "Resource & Sustainability", items: energyReports, color: "text-emerald-500", border: "border-emerald-500/10" }
+  ].filter(s => s.items.length > 0);
+
+  if (sections.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {fastNews.map((report) => (
-        <ReportCard key={report.id} report={report} />
+    <div className="space-y-32">
+      {sections.map((section) => (
+        <div key={section.title} className="relative">
+          <div className="flex items-center gap-6 mb-12">
+            <div className={`h-px flex-1 bg-gradient-to-r from-transparent via-white/5 to-transparent`} />
+            <div className="flex flex-col items-center text-center px-8">
+              <span className={`text-[10px] font-black uppercase tracking-[0.4em] ${section.color} mb-2`}>{section.subtitle}</span>
+              <h3 className="text-2xl md:text-4xl font-black text-white tracking-tighter uppercase">{section.title}</h3>
+            </div>
+            <div className={`h-px flex-1 bg-gradient-to-r from-transparent via-white/5 to-transparent`} />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {section.items.map((report) => (
+              <ReportCard key={report.id} report={report} />
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );
@@ -146,19 +171,19 @@ export default function Home() {
             </Suspense>
         </section>
 
-        {/* --- Tier 1: Reports (Fast News) --- */}
+        {/* --- Tier 1: Reports (Fast News Separated) --- */}
         <section className="mb-32">
-          <div className="flex items-center justify-between mb-12 border-b border-white/5 pb-8">
+          <div className="flex items-center justify-between mb-20 border-b border-white/5 pb-8">
               <div className="flex flex-col">
                 <h2 className="text-xs uppercase font-black tracking-[0.4em] text-gray-500 mb-2">Tier 01 // Fast News</h2>
-                <span className="text-3xl md:text-5xl font-black text-white tracking-tight uppercase">Market Intelligence</span>
+                <span className="text-3xl md:text-5xl font-black text-white tracking-tight uppercase">Sector Intelligence</span>
               </div>
               <Link href="/reports" className="hidden md:block text-xs font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
                     View all reports →
               </Link>
           </div>
           <Suspense fallback={<div className="grid grid-cols-3 gap-8"><div className="h-64 glass animate-pulse rounded-3xl" /><div className="h-64 glass animate-pulse rounded-3xl" /><div className="h-64 glass animate-pulse rounded-3xl" /></div>}>
-            <ReportsList />
+            <ReportsSection />
           </Suspense>
         </section>
 

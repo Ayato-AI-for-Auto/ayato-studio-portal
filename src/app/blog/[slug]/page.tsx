@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Markdown from 'react-markdown';
 import Link from 'next/link';
 
-import { getLocalArticleBySlug, getLocalContent } from '@/lib/local-content';
+import { getLocalArticleBySlug, getLocalArticles } from '@/lib/local-content';
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
 
@@ -104,7 +104,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 }
 
 export async function generateStaticParams() {
-  const articles = getLocalContent('blog');
+  const articles = getLocalArticles('blog');
   return articles.map((article) => ({
     slug: article.slug,
   }));
