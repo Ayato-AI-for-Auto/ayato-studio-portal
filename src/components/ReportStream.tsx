@@ -15,7 +15,7 @@ export default function ReportStream({ initialReports = [] }: ReportStreamProps)
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const isMounted = true;
+        let isMounted = true;
         
         async function load() {
             if (initialReports.length > 0 && loading) {
@@ -29,19 +29,23 @@ export default function ReportStream({ initialReports = [] }: ReportStreamProps)
                     setReports(data);
                     setLoading(false);
                 }
-            } catch (e: any) {
+            } catch (e: unknown) {
+                const message = e instanceof Error ? e.message : 'Unknown error';
                 console.error("Failed to load reports:", e);
                 setError(
-                    e.message?.includes("401") || e.message?.includes("403") || e.status === 401
-                        ? "Authentication Error: Please ensure the Supabase Anon Key is used (not the secret key)."
+                    message.includes("401") || message.includes("403")
+                        ? "Authentication Error: Please ensure the Supabase Anon Key is used (not the center key)."
                         : "Unable to connect to the Intelligence Hub."
                 );
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         }
         load();
-    }, []);
+        return () => { isMounted = false; };
+    }, [initialReports.length, loading]);
 
     const filteredReports = activeCategory === "All" 
         ? reports 
@@ -66,7 +70,7 @@ export default function ReportStream({ initialReports = [] }: ReportStreamProps)
                     </svg>
                 </div>
                 <p className="text-red-400 mb-2 font-black text-xl">Connectivity Disrupted</p>
-                <p className="text-sm text-red-500/60 max-w-sm mx-auto">{error}</p>
+                <p className="text-sm text-red-500/60 max-w-sm mx-auto">&apos;{error}&apos;</p>
             </div>
         );
     }
@@ -80,7 +84,7 @@ export default function ReportStream({ initialReports = [] }: ReportStreamProps)
                     </svg>
                 </div>
                 <p className="text-2xl font-black text-gray-600 mb-3">Silent Engine</p>
-                <p className="text-sm text-gray-700 max-w-xs mx-auto">The Intelligence Engine hasn't delivered any artifacts to the portal yet.</p>
+                <p className="text-sm text-gray-700 max-w-xs mx-auto">The Intelligence Engine hasn&apos;t delivered any artifacts to the portal yet.</p>
             </div>
         );
     }

@@ -4,7 +4,6 @@ import Markdown from 'react-markdown';
 import Link from 'next/link';
 
 import { getLocalArticleBySlug, getLocalArticles } from '@/lib/local-content';
-import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
 
 interface PageProps {

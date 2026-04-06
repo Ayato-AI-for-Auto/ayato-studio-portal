@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import Markdown from 'react-markdown';
 import { cn } from "@/lib/utils";
 import { Report } from '../lib/api';
@@ -88,13 +87,13 @@ export default function ReportView({ report }: ReportViewProps) {
                         ">
                             <Markdown
                                 components={{
-                                    blockquote: ({ node, ...props }) => {
-                                        const extractText = (nodes: any): string => {
+                                    blockquote: ({ ...props }) => {
+                                        const extractText = (nodes: React.ReactNode): string => {
                                             return React.Children.toArray(nodes)
                                                 .map(child => {
                                                     if (typeof child === 'string') return child;
                                                     if (typeof child === 'number') return String(child);
-                                                    if ((child as any)?.props?.children) return extractText((child as any).props.children);
+                                                    if (React.isValidElement(child) && child.props && "children" in (child.props as object)) return extractText((child.props as { children: React.ReactNode }).children);
                                                     return '';
                                                 })
                                                 .join('');
@@ -136,13 +135,13 @@ export default function ReportView({ report }: ReportViewProps) {
                                         }
                                         return <blockquote className="border-l-4 border-white/10 pl-6 my-6 italic text-gray-400 font-medium" {...props} />;
                                     },
-                                    p: ({ node, ...props }) => {
-                                        const extractText = (nodes: any): string => {
+                                    p: ({ ...props }) => {
+                                        const extractText = (nodes: React.ReactNode): string => {
                                             return React.Children.toArray(nodes)
                                                 .map(child => {
                                                     if (typeof child === 'string') return child;
                                                     if (typeof child === 'number') return String(child);
-                                                    if ((child as any)?.props?.children) return extractText((child as any).props.children);
+                                                    if (React.isValidElement(child) && child.props && "children" in (child.props as object)) return extractText((child.props as { children: React.ReactNode }).children);
                                                     return '';
                                                 })
                                                 .join('');

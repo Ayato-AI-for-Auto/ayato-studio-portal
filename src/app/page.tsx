@@ -35,14 +35,21 @@ async function FeaturedBlogSection() {
   const weekly = aiReports.filter(r => r.category === "Weekly").slice(0, 1);
   const local = getLocalArticles('blog').slice(0, 1);
  
-  const featured = [
+  const featured: Array<{
+    id?: string;
+    slug: string;
+    title: string;
+    type: string;
+    href: string;
+    timestamp: string;
+  }> = [
     ...weekly.map(r => ({ ...r, type: 'Weekly Review', href: `/reports/${r.slug}`, timestamp: r.timestamp })),
     ...local.map((l: LocalArticle) => ({ ...l, type: 'Human Insight', href: `/blog/${l.slug}`, timestamp: l.date }))
   ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-32">
-      {featured.map((item: any) => (
+      {featured.map((item) => (
         <Link key={item.id || item.slug} href={item.href} className="group relative aspect-[16/9] md:aspect-auto overflow-hidden rounded-[3rem] border border-white/5 bg-white/[0.02]">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
             <div className="absolute bottom-0 left-0 p-10 z-20 w-full">

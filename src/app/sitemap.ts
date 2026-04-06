@@ -28,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     try {
         const reports = await fetchReports();
         if (reports && reports.length > 0) {
-            const reportPages: MetadataRoute.Sitemap = reports.map((report: any) => ({
+            const reportPages: MetadataRoute.Sitemap = reports.map((report: { filename: string; timestamp: string }) => ({
                 url: `https://ayato-studio.ai/reports/${report.filename}`,
                 lastModified: new Date(report.timestamp),
                 changeFrequency: 'weekly',

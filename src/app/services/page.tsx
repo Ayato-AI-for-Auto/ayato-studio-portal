@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { getLocalArticles } from "@/lib/local-content"
-import { cn } from "@/lib/utils"
 import { Icons } from "@/components/icons"
 
 export const metadata = {

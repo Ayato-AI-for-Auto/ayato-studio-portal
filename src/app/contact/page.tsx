@@ -23,7 +23,7 @@ export default function ContactPage() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">TOUCH</span>
             </h1>
             <p className="text-lg text-gray-400 font-medium leading-relaxed max-w-sm mx-auto">
-              Any questions, feedback, or custom research inquiries? We're here to help.
+              Any questions, feedback, or custom research inquiries? We&apos;re here to help.
             </p>
           </div>
 

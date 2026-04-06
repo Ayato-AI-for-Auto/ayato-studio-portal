@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Report } from "@/lib/api"
-import { cn, formatDate } from "@/lib/utils"
+import { formatDate } from "@/lib/utils"
 
 interface PostItemProps {
   post: Report

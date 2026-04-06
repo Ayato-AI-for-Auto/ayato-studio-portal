@@ -1,0 +1,28 @@
+
+C:\Users\saiha\My_Service\AI-agent\product\ayato_studio_portal\src\app\sitemap.ts
+  31:77  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\saiha\My_Service\AI-agent\product\ayato_studio_portal\src\components\ReportView.tsx
+   96:67   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:119  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  144:67   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  144:119  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\saiha\My_Service\AI-agent\product\ayato_studio_portal\src\components\post-item.tsx
+  3:10  warning  'cn' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\saiha\My_Service\AI-agent\product\ayato_studio_portal\src\components\site-header.tsx
+  1:8   warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+  4:10  warning  'cn' is defined but never used    @typescript-eslint/no-unused-vars
+
+C:\Users\saiha\My_Service\AI-agent\product\ayato_studio_portal\src\lib\api.ts
+  53:12  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\saiha\My_Service\AI-agent\product\ayato_studio_portal\src\lib\local-content.ts
+  20:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\saiha\My_Service\AI-agent\product\ayato_studio_portal\src\tests\setup.ts
+  5:10  warning  'expect' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 11 problems (0 errors, 11 warnings)
+

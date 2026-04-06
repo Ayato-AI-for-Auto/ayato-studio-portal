@@ -1,0 +1,6 @@
+
+C:\Users\saiha\My_Service\AI-agent\product\ayato_studio_portal\src\lib\api.ts
+  53:12  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (0 errors, 1 warning)
+

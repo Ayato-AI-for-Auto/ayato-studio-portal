@@ -1,3 +1,4 @@
+import React from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -49,7 +50,7 @@ export const Icons = {
   moon: Moon,
   laptop: Laptop,
   check: Check,
-  gitHub: (props: any) => (
+  gitHub: (props: React.SVGProps<SVGSVGElement>) => (
     <svg 
       {...props} 
       viewBox="0 0 24 24" 

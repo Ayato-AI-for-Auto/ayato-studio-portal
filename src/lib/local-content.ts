@@ -17,7 +17,7 @@ export interface LocalArticle {
  */
 function parseFrontmatter(fileContents: string) {
   const match = fileContents.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  const data: any = {};
+  const data: Record<string, string> = {};
   let content = fileContents;
   
   if (match) {

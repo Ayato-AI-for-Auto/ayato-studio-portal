@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { fetchReports } from "@/lib/api";
 import { getLocalArticles } from "@/lib/local-content";
-import ReportCard from "@/components/ReportCard";
 import Link from 'next/link';
 
 // blog/page.tsx - Combines Weekly AI reviews and Human local articles

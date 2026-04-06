@@ -35,7 +35,7 @@ export const supabase = (supabaseUrl && supabaseKey)
     })
     : null;
 
-const isBuild = process.env.NODE_ENV === 'production' && typeof window === 'undefined';
+// const isBuild = process.env.NODE_ENV === 'production' && typeof window === 'undefined';
 
 // Helper to create a safe slug from filename/URL (fixes Windows path length issues)
 function getSlug(filename: string): string {
@@ -50,14 +50,14 @@ function getSlug(filename: string): string {
         hash |= 0;
     }
     return `${lastPart.substring(0, 30)}-${Math.abs(hash).toString(36)}`;
-  } catch (e) {
+  } catch (_e) {
     // Not a URL, just sanitize
     return filename.replace(/[^a-z0-9]/gi, '-').toLowerCase().substring(0, 50);
   }
 }
 
 export async function fetchReports(): Promise<Report[]> {
-  let localReports: Report[] = [];
+  const localReports: Report[] = [];
 
   // 0. Fetch Local Reports (Development/Hybrid mode)
   if (typeof window === 'undefined') {
@@ -75,7 +75,7 @@ export async function fetchReports(): Promise<Report[]> {
               
               // Simple frontmatter parse
               const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-              const fm: any = {};
+              const fm: Record<string, string> = {};
               if (fmMatch) {
                 fmMatch[1].split('\n').forEach(line => {
                   const [k, ...v] = line.split(':');
@@ -142,7 +142,7 @@ export async function fetchReports(): Promise<Report[]> {
       return [];
     }
 
-    return (fallbackData || []).map((r: any) => ({
+    return (fallbackData || []).map((r: { id: string | number; item_id: string; title: string; category: string; language: string; generated_at: string; market: string; content_md: string }) => ({
       id: String(r.id),
       filename: r.item_id,
       slug: getSlug(r.item_id),
@@ -158,7 +158,7 @@ export async function fetchReports(): Promise<Report[]> {
   }
 
   // 3. Process main result
-  const remoteReports = (data || []).map((r: any) => ({
+  const remoteReports = (data || []).map((r: { id: string | number; item_id: string; title: string; category: string; language: string; generated_at: string; market: string; content_md: string }) => ({
     id: String(r.id),
     filename: r.item_id,
     slug: getSlug(r.item_id),
@@ -215,9 +215,10 @@ export async function fetchCurrentOrganization(): Promise<{ org: Organization | 
 
         if (error) throw error;
         return { org: org as Organization };
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('Fetch Org error:', err);
-        return { org: null, error: err.message || 'Failed to fetch organization' };
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        return { org: null, error: message || 'Failed to fetch organization' };
     }
 }
 

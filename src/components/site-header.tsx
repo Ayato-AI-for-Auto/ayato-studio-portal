@@ -1,7 +1,4 @@
-import Link from "next/link"
-
 import { MainNav } from "@/components/main-nav"
-import { cn } from "@/lib/utils"
 
 export function SiteHeader() {
   return (
