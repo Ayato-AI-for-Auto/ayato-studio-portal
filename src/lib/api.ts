@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
+import path from 'path';
 
 export interface Report {
   id: string; 
@@ -55,9 +57,56 @@ function getSlug(filename: string): string {
 }
 
 export async function fetchReports(): Promise<Report[]> {
+  let localReports: Report[] = [];
+
+  // 0. Fetch Local Reports (Development/Hybrid mode)
+  if (typeof window === 'undefined') {
+    try {
+      const reportsDir = path.join(process.cwd(), 'src', 'content', 'reports');
+      if (fs.existsSync(reportsDir)) {
+        const sectors = ['tech', 'finance', 'energy', 'weekly'];
+        sectors.forEach(sector => {
+          const sectorDir = path.join(reportsDir, sector);
+          if (fs.existsSync(sectorDir)) {
+            const files = fs.readdirSync(sectorDir).filter(f => f.endsWith('.md'));
+            files.forEach(file => {
+              const fullPath = path.join(sectorDir, file);
+              const content = fs.readFileSync(fullPath, 'utf8');
+              
+              // Simple frontmatter parse
+              const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+              const fm: any = {};
+              if (fmMatch) {
+                fmMatch[1].split('\n').forEach(line => {
+                  const [k, ...v] = line.split(':');
+                  if (k && v) fm[k.trim()] = v.join(':').trim();
+                });
+              }
+
+              localReports.push({
+                id: `local-${file}`,
+                filename: file,
+                slug: file.replace('.md', ''),
+                title: fm.title || file,
+                category: fm.category || sector.toUpperCase(),
+                language: fm.language || 'jp',
+                timestamp: fm.date || new Date().toISOString(),
+                market: sector === 'tech' ? 'tech' : (sector === 'finance' ? 'finance' : 'energy'),
+                author: 'Local Engine',
+                content: content.replace(fmMatch ? fmMatch[0] : '', '').trim(),
+              });
+            });
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('[API] Failed to fetch local reports:', e);
+    }
+  }
+
   if (!supabase) {
-    console.warn('[API] Supabase client not initialized.');
-    return [];
+    console.warn('[API] Supabase client not initialized. Returning local reports only.');
+    return localReports;
   }
 
   console.log('[API] Fetching reports from generated_reports...');
@@ -109,7 +158,7 @@ export async function fetchReports(): Promise<Report[]> {
   }
 
   // 3. Process main result
-  return (data || []).map((r: any) => ({
+  const remoteReports = (data || []).map((r: any) => ({
     id: String(r.id),
     filename: r.item_id,
     slug: getSlug(r.item_id),
@@ -122,6 +171,11 @@ export async function fetchReports(): Promise<Report[]> {
     content: r.content_md || '',
     sourceUrl: undefined
   }));
+
+  // Combine and sort by timestamp descending
+  return [...localReports, ...remoteReports].sort((a, b) => 
+    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
 }
 
 export async function fetchReportByFilename(slugOrFilename: string): Promise<Report | null> {

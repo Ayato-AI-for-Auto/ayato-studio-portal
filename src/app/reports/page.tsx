@@ -1,8 +1,8 @@
 import { fetchReports } from "@/lib/api";
 import { PostItem } from "@/components/post-item";
 
-export const dynamic = "force-static";
-export const revalidate = 3600; // 1 hour
+export const dynamic = "force-dynamic";
+export const revalidate = 0; 
 
 export default async function ReportsPage() {
   const reports = await fetchReports();

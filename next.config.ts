@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
-  /* Static export mode for maximum DoS protection */
+  // output: 'export',
+  /* Temporarily disabled to force dynamic update */
 };
 
 export default nextConfig;
