@@ -50,7 +50,7 @@ function getSlug(filename: string): string {
         hash |= 0;
     }
     return `${lastPart.substring(0, 30)}-${Math.abs(hash).toString(36)}`;
-  } catch (_e) {
+  } catch {
     // Not a URL, just sanitize
     return filename.replace(/[^a-z0-9]/gi, '-').toLowerCase().substring(0, 50);
   }
