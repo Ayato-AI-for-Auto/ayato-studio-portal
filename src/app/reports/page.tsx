@@ -1,8 +1,7 @@
 import { fetchReports } from "@/lib/api";
 import { PostItem } from "@/components/post-item";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0; 
+export const revalidate = 60;
 
 export default async function ReportsPage() {
   const reports = await fetchReports();

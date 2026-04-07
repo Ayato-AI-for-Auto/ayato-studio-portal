@@ -5,6 +5,8 @@ import { LocalArticle } from "@/lib/types";
 import ReportCard from "@/components/ReportCard";
 import Link from 'next/link';
 
+export const revalidate = 60;
+
 // Home Page - Ayato Studio Intelligence Portal
 
 async function ServicesSection() {
