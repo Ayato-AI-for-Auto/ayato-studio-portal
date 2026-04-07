@@ -1,7 +1,11 @@
 {
-  "name": "ayato_studio_portal",
-  "version": "0.1.0",
-  "private": true,
+  "name": "ayato-studio-portal",
+  "version": "1.0.0",
+  "description": "AI-Powered Intelligence Media Hub - Synergy between Flow AI and Stock Human Insights.",
+  "private": false,
+  "license": "MIT",
+  "author": "Ayato Studio",
+  "homepage": "https://ayato-studio.ai",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "pages:build": "npx @cloudflare/next-on-pages"
+    "pages:build": "npx @cloudflare/next-on-pages",
+    "audit:rls": "npx tsx scripts/audit-rls.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
