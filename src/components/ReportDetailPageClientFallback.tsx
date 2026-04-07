@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { fetchReportByFilename, Report } from '../lib/api';
+import { fetchReportByFilename } from '../lib/api';
+import { Report } from "@/lib/types";
 import ReportView from './ReportView';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';

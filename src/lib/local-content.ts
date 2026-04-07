@@ -1,15 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-
-export interface LocalArticle {
-  slug: string;
-  title: string;
-  date: string;
-  description: string;
-  category: string;
-  image?: string;
-  content: string;
-}
+import { LocalArticle, Report } from './types';
+import { getSlug } from './api';
 
 /**
  * Parses simple YAML-like frontmatter from Markdown content.
@@ -81,4 +73,50 @@ export function getLocalArticleBySlug(directory: 'blog' | 'services', slug: stri
     image: data.image || '',
     content,
   };
+}
+
+/**
+ * Fetches reports stored locally in the filesystem.
+ * Moved from api.ts to keep Node.js specific code in server-only utilities.
+ */
+export function getLocalReports(): Report[] {
+  const localReports: Report[] = [];
+  const reportsDir = path.join(process.cwd(), 'src', 'content', 'reports');
+  
+  if (!fs.existsSync(reportsDir)) {
+    return [];
+  }
+
+  try {
+    const sectors = ['tech', 'finance', 'energy', 'weekly'];
+    sectors.forEach(sector => {
+      const sectorDir = path.join(reportsDir, sector);
+      if (fs.existsSync(sectorDir)) {
+        const files = fs.readdirSync(sectorDir).filter(f => f.endsWith('.md'));
+        files.forEach(file => {
+          const fullPath = path.join(sectorDir, file);
+          const content = fs.readFileSync(fullPath, 'utf8');
+          
+          const { data, content: textContent } = parseFrontmatter(content);
+
+          localReports.push({
+            id: `local-${file}`,
+            filename: file,
+            slug: getSlug(file.replace('.md', '')),
+            title: data.title || file,
+            category: data.category || sector.toUpperCase(),
+            language: data.language || 'jp',
+            timestamp: data.date || new Date().toISOString(),
+            market: sector === 'tech' ? 'tech' : (sector === 'finance' ? 'finance' : 'energy'),
+            author: 'Local Engine',
+            content: textContent,
+          });
+        });
+      }
+    });
+  } catch (e) {
+    console.warn('[LocalContent] Failed to fetch local reports:', e);
+  }
+
+  return localReports;
 }

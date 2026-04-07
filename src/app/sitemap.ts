@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { fetchReports } from '../lib/api'
-import { getLocalArticles } from '../lib/local-content'
+import { getLocalArticles, getLocalReports } from '../lib/local-content'
+import { Report } from '../lib/types'
 
 export const dynamic = 'force-static';
 
@@ -55,9 +56,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     let allPages = [...staticPages];
 
-    // 2. AIレポート (外部API)
+    // 2. インテリジェンス・レポート (リモート + ローカル)
     try {
-        const reports = await fetchReports();
+        const remoteReports = await fetchReports();
+        const localReports = getLocalReports();
+        const reports = [...remoteReports, ...localReports];
+
         if (reports && reports.length > 0) {
             const reportPages: MetadataRoute.Sitemap = reports.map((report) => ({
                 url: `${baseUrl}/reports/${report.slug}`,
@@ -67,8 +71,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             }));
             allPages = [...allPages, ...reportPages];
         }
-    } catch {
-        // ...
+    } catch (e) {
+        console.error('[Sitemap] Failed to fetch reports:', e);
     }
 
     // 3. ローカルブログ記事

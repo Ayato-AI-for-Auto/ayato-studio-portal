@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { fetchReports } from "@/lib/api";
-import { getLocalArticles, LocalArticle } from "@/lib/local-content";
+import { getLocalArticles } from "@/lib/local-content";
+import { LocalArticle } from "@/lib/types";
 import ReportCard from "@/components/ReportCard";
 import Link from 'next/link';
 

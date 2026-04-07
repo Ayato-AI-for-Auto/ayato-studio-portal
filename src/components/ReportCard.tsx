@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Report } from "../lib/api";
+import { Report } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export default function ReportCard({ report }: { report: Report }) {

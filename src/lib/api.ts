@@ -1,21 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import fs from 'fs';
-import path from 'path';
-
-export interface Report {
-  id: string; 
-  filename: string; // The original URL or unique identifier (item_id in DB)
-  slug: string; // Used for safe FS paths and routing
-  title: string;
-  category: string;
-  language: string;
-  timestamp: string;
-  market: string;
-  author: string;
-  content: string;
-  sourceUrl?: string;
-}
-
+import { Report, Organization } from './types';
 
 // Single Unified Supabase Client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -35,10 +19,8 @@ export const supabase = (supabaseUrl && supabaseKey)
     })
     : null;
 
-// const isBuild = process.env.NODE_ENV === 'production' && typeof window === 'undefined';
-
 // Helper to create a safe slug from filename/URL (fixes Windows path length issues)
-function getSlug(filename: string): string {
+export function getSlug(filename: string): string {
   if (!filename) return "report";
   try {
     const url = new URL(filename);
@@ -56,57 +38,14 @@ function getSlug(filename: string): string {
   }
 }
 
+/**
+ * Fetches reports from Supabase. 
+ * Local reports loading has been moved to local-content.ts to avoid bundling Node.js 'fs' in client components.
+ */
 export async function fetchReports(): Promise<Report[]> {
-  const localReports: Report[] = [];
-
-  // 0. Fetch Local Reports (Development/Hybrid mode)
-  if (typeof window === 'undefined') {
-    try {
-      const reportsDir = path.join(process.cwd(), 'src', 'content', 'reports');
-      if (fs.existsSync(reportsDir)) {
-        const sectors = ['tech', 'finance', 'energy', 'weekly'];
-        sectors.forEach(sector => {
-          const sectorDir = path.join(reportsDir, sector);
-          if (fs.existsSync(sectorDir)) {
-            const files = fs.readdirSync(sectorDir).filter(f => f.endsWith('.md'));
-            files.forEach(file => {
-              const fullPath = path.join(sectorDir, file);
-              const content = fs.readFileSync(fullPath, 'utf8');
-              
-              // Simple frontmatter parse
-              const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-              const fm: Record<string, string> = {};
-              if (fmMatch) {
-                fmMatch[1].split('\n').forEach(line => {
-                  const [k, ...v] = line.split(':');
-                  if (k && v) fm[k.trim()] = v.join(':').trim();
-                });
-              }
-
-              localReports.push({
-                id: `local-${file}`,
-                filename: file,
-                slug: file.replace('.md', ''),
-                title: fm.title || file,
-                category: fm.category || sector.toUpperCase(),
-                language: fm.language || 'jp',
-                timestamp: fm.date || new Date().toISOString(),
-                market: sector === 'tech' ? 'tech' : (sector === 'finance' ? 'finance' : 'energy'),
-                author: 'Local Engine',
-                content: content.replace(fmMatch ? fmMatch[0] : '', '').trim(),
-              });
-            });
-          }
-        });
-      }
-    } catch (e) {
-      console.warn('[API] Failed to fetch local reports:', e);
-    }
-  }
-
   if (!supabase) {
-    console.warn('[API] Supabase client not initialized. Returning local reports only.');
-    return localReports;
+    console.warn('[API] Supabase client not initialized. Returning empty array.');
+    return [];
   }
 
   console.log('[API] Fetching reports from generated_reports...');
@@ -172,8 +111,8 @@ export async function fetchReports(): Promise<Report[]> {
     sourceUrl: undefined
   }));
 
-  // Combine and sort by timestamp descending
-  return [...localReports, ...remoteReports].sort((a, b) => 
+  // Sort by timestamp descending
+  return remoteReports.sort((a, b) => 
     new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
   );
 }
@@ -187,18 +126,6 @@ export async function fetchReportByFilename(slugOrFilename: string): Promise<Rep
   const report = allReports.find(r => r.slug === slugOrFilename || r.filename === slugOrFilename);
   
   return report || null;
-}
-
-
-export interface Organization {
-    id: string;
-    name: string;
-    api_key_hash: string;
-    user_id: string;
-    plan_type: string;
-    request_limit: number;
-    current_usage_count: number;
-    status: string;
 }
 
 export async function fetchCurrentOrganization(): Promise<{ org: Organization | null; error?: string }> {

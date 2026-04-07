@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchReports, Report } from "../lib/api";
+import { fetchReports } from "../lib/api";
+import { Report } from "@/lib/types";
 import ReportCard from "./ReportCard";
 
 interface ReportStreamProps {

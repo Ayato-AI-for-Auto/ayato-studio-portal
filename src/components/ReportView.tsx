@@ -1,7 +1,7 @@
 import React from 'react';
 import Markdown from 'react-markdown';
 import { cn } from "@/lib/utils";
-import { Report } from '../lib/api';
+import { Report } from "@/lib/types";
 
 interface ReportViewProps {
     report: Report;
