@@ -75,11 +75,11 @@ export default function TokuteiPage() {
                                 </tr>
                                 <tr className="border-b border-white/5">
                                     <th className="p-8 md:p-10 bg-white/[0.01] font-black text-gray-400 uppercase tracking-widest text-[10px]">お支払方法</th>
-                                    <td className="p-8 md:p-10 text-gray-200 font-medium">クレジットカード、その他当社が指定する方法（Stripe経由）。</td>
+                                    <td className="p-8 md:p-10 text-gray-200 font-medium">外部プラットフォーム（OFUSE等）を介した決済、または当社が別途指定する方法。なお、現在はStripeによる直接販売は停止しており、プラットフォームの規約に準じます。</td>
                                 </tr>
                                 <tr className="border-b border-white/5">
                                     <th className="p-8 md:p-10 bg-white/[0.01] font-black text-gray-400 uppercase tracking-widest text-[10px]">提供開始後のキャンセル・返品</th>
-                                    <td className="p-8 md:p-10 text-gray-200 font-medium">デジタルコンテンツの性質上、提供開始後の返品・キャンセルはお受けできません。解約は次回の更新日までに行うものとし、日割り計算による返金は行いません。</td>
+                                    <td className="p-8 md:p-10 text-gray-200 font-medium">デジタルコンテンツおよび寄付の性質上、決済完了後の返品・キャンセルはお受けできません。各プラットフォームのポリシーに従ってください。</td>
                                 </tr>
                                 <tr>
                                     <th className="p-8 md:p-10 bg-white/[0.01] font-black text-gray-400 uppercase tracking-widest text-[10px]">動作環境</th>
@@ -92,8 +92,8 @@ export default function TokuteiPage() {
 
                 <div className="mt-16 p-8 md:p-10 rounded-[2rem] border border-blue-500/20 bg-blue-500/5">
                     <p className="text-gray-400 text-sm leading-relaxed">
-                        ※上記項目で「[ ]」となっている箇所については、法的に運営者の個人情報または法人情報を開示する必要があります。
-                        実際のサービス運営にあたっては、運営者様の最新情報を正確にご入力いただくようお願い申し上げます。
+                        ※現在、Ayato Studio では個人開発におけるプライバシー保護の観点から、直接の販売を行わず、外部プラットフォーム（OFUSE）を主要な支援窓口としています。<br />
+                        直接販売の再開時には、法的に求められる情報を適切に公開いたします。
                     </p>
                 </div>
             </article>

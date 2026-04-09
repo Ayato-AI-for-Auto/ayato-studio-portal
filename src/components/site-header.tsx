@@ -30,6 +30,10 @@ export function SiteHeader() {
                 title: "Contact",
                 href: "/contact",
               },
+              {
+                title: "Support",
+                href: "/support",
+              },
           ]}
         />
         <nav className="flex items-center space-x-2">
