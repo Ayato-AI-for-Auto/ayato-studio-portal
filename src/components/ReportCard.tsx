@@ -70,7 +70,7 @@ export default function ReportCard({ report }: { report: Report }) {
                     </span>
                 </div>
                 <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">
-                    {new Date(report.timestamp).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.')}
+                    {new Date(report.timestamp).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Tokyo' }).replace(/\//g, '.')}
                 </span>
             </div>
 

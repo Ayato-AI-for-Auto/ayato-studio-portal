@@ -48,7 +48,7 @@ async function BlogList() {
                         {post.category}
                     </span>
                     <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">
-                        {new Date(post.timestamp).toLocaleDateString()}
+                        {new Date(post.timestamp).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }).replace(/\//g, ".")}
                     </span>
                 </div>
                 <h3 className="text-2xl md:text-3xl font-black text-white group-hover:text-blue-400 transition-colors mb-4 line-clamp-2 leading-tight">

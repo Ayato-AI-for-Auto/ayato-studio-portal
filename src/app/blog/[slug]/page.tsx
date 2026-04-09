@@ -89,7 +89,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                     <div className="h-10 w-px bg-white/10" />
                     <div>
                         <p className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Published</p>
-                        <p className="text-sm font-bold">{new Date(article.date).toLocaleDateString()}</p>
+                        <p className="text-sm font-bold">{new Date(article.date).toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" }).replace(/\//g, ".")}</p>
                     </div>
                 </div>
             </div>

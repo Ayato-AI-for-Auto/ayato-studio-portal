@@ -11,5 +11,18 @@ export function formatDate(input: string | number): string {
     month: "long",
     day: "numeric",
     year: "numeric",
+    timeZone: "Asia/Tokyo",
   })
+}
+
+export function formatDateTime(input: string | number): string {
+  const date = new Date(input)
+  return date.toLocaleString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Tokyo",
+  }).replace(/\//g, ".")
 }

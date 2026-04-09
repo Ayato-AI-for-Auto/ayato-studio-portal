@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { fetchReportByFilename, fetchReports } from '@/lib/api';
-import { cn, formatDate } from '@/lib/utils';
+import { cn, formatDate, formatDateTime } from '@/lib/utils';
 import { Icons } from '@/components/icons';
 import ReportView from '@/components/ReportView';
 import { CTASection } from '@/components/cta-section';
@@ -78,7 +78,7 @@ export default async function ReportDetailPage({ params }: PageProps) {
           dateTime={report.timestamp}
           className="block text-sm text-muted-foreground"
         >
-          Published on {formatDate(report.timestamp)}
+          Published on {formatDateTime(report.timestamp)} (JST)
         </time>
         <h1 className="mt-2 inline-block font-heading text-4xl leading-tight lg:text-5xl font-bold">
           {report.title}
