@@ -33,3 +33,12 @@ export interface Organization {
     current_usage_count: number;
     status: string;
 }
+
+export interface NoteArticle {
+  title: string;
+  link: string;
+  pubDate: string;
+  contentSnippet: string;
+  thumbnail?: string;
+  isPremium?: boolean;
+}
