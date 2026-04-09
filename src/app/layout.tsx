@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -26,6 +27,12 @@ export default function RootLayout({
         "min-h-screen bg-background font-sans antialiased",
         inter.className
       )}>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9593223306166400"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <div className="relative flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1">{children}</main>
