@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { getLocalArticleBySlug, getLocalArticles } from '@/lib/local-content';
 import { Icons } from '@/components/icons';
+import { CTASection } from '@/components/cta-section';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -110,6 +111,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                     ">
                         <Markdown>{article.content}</Markdown>
                     </div>
+
+                    {/* CTA Section */}
+                    <CTASection theme="blue" />
                 </div>
             </div>
 

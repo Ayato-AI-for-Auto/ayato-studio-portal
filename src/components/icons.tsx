@@ -10,9 +10,11 @@ import {
   File,
   FileText,
   HelpCircle,
+  ExternalLink,
   Image,
   Laptop,
   Loader2,
+  Mail,
   Moon,
   MoreVertical,
   Pizza,
@@ -50,6 +52,8 @@ export const Icons = {
   moon: Moon,
   laptop: Laptop,
   check: Check,
+  externalLink: ExternalLink,
+  mail: Mail,
   gitHub: (props: React.SVGProps<SVGSVGElement>) => (
     <svg 
       {...props} 

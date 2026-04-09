@@ -6,6 +6,7 @@ import { fetchReportByFilename, fetchReports } from '@/lib/api';
 import { cn, formatDate } from '@/lib/utils';
 import { Icons } from '@/components/icons';
 import ReportView from '@/components/ReportView';
+import { CTASection } from '@/components/cta-section';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -96,6 +97,9 @@ export default async function ReportDetailPage({ params }: PageProps) {
       {/* デフォルトエクスポートを正しくインポートして適用 */}
       <ReportView report={report} />
       
+      {/* CTA Section */}
+      <CTASection theme="blue" className="mt-16" />
+
       <hr className="my-8" />
       <div className="flex justify-center py-6 lg:py-10">
         <Link href="/reports" className={cn("inline-flex items-center justify-center rounded-md border border-input bg-background px-8 h-11 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground")}>
