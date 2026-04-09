@@ -63,12 +63,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const reports = [...remoteReports, ...localReports];
 
         if (reports && reports.length > 0) {
-            const reportPages: MetadataRoute.Sitemap = reports.map((report) => ({
-                url: `${baseUrl}/reports/${report.slug}`,
-                lastModified: new Date(report.timestamp),
-                changeFrequency: 'weekly',
-                priority: 0.7,
-            }));
+            const reportPages: MetadataRoute.Sitemap = reports
+                .filter(report => report.timestamp)
+                .map((report) => ({
+                    url: `${baseUrl}/reports/${report.slug}`,
+                    lastModified: isValidDate(report.timestamp) ? new Date(report.timestamp) : new Date(),
+                    changeFrequency: 'weekly',
+                    priority: 0.7,
+                }));
             allPages = [...allPages, ...reportPages];
         }
     } catch (e) {
@@ -78,30 +80,55 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 3. ローカルブログ記事
     try {
         const blogArticles = getLocalArticles('blog');
-        const blogPages: MetadataRoute.Sitemap = blogArticles.map((article) => ({
-            url: `${baseUrl}/blog/${article.slug}`,
-            lastModified: new Date(article.date),
-            changeFrequency: 'monthly',
-            priority: 0.8,
-        }));
+        const blogPages: MetadataRoute.Sitemap = blogArticles
+            .filter(article => article.date)
+            .map((article) => ({
+                url: `${baseUrl}/blog/${article.slug}`,
+                lastModified: isValidDate(article.date) ? new Date(article.date) : new Date(),
+                changeFrequency: 'monthly',
+                priority: 0.8,
+            }));
         allPages = [...allPages, ...blogPages];
-    } catch {
-        // ...
+    } catch (e) {
+        console.error('[Sitemap] Failed to fetch blog articles:', e);
     }
 
-    // 4. ローカルサービス紹介
+    // 4. アカデミー (学習シリーズ)
+    try {
+        const academyArticles = getLocalArticles('academy');
+        const academyPages: MetadataRoute.Sitemap = academyArticles
+            .filter(article => article.date)
+            .map((article) => ({
+                url: `${baseUrl}/academy/${article.slug}`,
+                lastModified: isValidDate(article.date) ? new Date(article.date) : new Date(),
+                changeFrequency: 'monthly',
+                priority: 0.8,
+            }));
+        allPages = [...allPages, ...academyPages];
+    } catch (e) {
+        console.error('[Sitemap] Failed to fetch academy articles:', e);
+    }
+
+    // 5. ローカルサービス紹介
     try {
         const serviceArticles = getLocalArticles('services');
-        const servicePages: MetadataRoute.Sitemap = serviceArticles.map((article) => ({
-            url: `${baseUrl}/services/${article.slug}`,
-            lastModified: new Date(article.date),
-            changeFrequency: 'monthly',
-            priority: 0.8,
-        }));
+        const servicePages: MetadataRoute.Sitemap = serviceArticles
+            .filter(article => article.date)
+            .map((article) => ({
+                url: `${baseUrl}/services/${article.slug}`,
+                lastModified: isValidDate(article.date) ? new Date(article.date) : new Date(),
+                changeFrequency: 'monthly',
+                priority: 0.8,
+            }));
         allPages = [...allPages, ...servicePages];
-    } catch {
-        // ...
+    } catch (e) {
+        console.error('[Sitemap] Failed to fetch service articles:', e);
     }
 
     return allPages;
+}
+
+function isValidDate(dateStr: string) {
+    const d = new Date(dateStr);
+    return !isNaN(d.getTime());
 }

@@ -11,6 +11,10 @@ export function SiteHeader() {
                 href: "/reports",
               },
               {
+                title: "Academy",
+                href: "/academy",
+              },
+              {
                 title: "Blog",
                 href: "/blog",
               },

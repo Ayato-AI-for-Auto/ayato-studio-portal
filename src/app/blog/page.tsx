@@ -78,7 +78,7 @@ export default function BlogPage() {
           </h1>
           <p className="text-xl text-gray-500 font-medium leading-relaxed">
             AI が生成する週刊インテリジェンス・レビューと、<br className="hidden md:block" />
-            人間による技術・ビジョンについての考察を統合したインサイト・ハブ。
+            人間による最新の技術考察やマーケット・インサイトを統合した情報ハブ。
           </p>
         </div>
 

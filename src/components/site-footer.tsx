@@ -13,6 +13,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             &copy; {new Date().getFullYear()} Ayato Studio.
           </p>
           <nav className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
+            <Link href="/academy" className="hover:text-foreground transition-colors">Academy</Link>
             <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
             <Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link>
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
