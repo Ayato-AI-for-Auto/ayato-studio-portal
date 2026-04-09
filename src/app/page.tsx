@@ -3,6 +3,7 @@ import { fetchReports } from "@/lib/api";
 import { getLocalArticles } from "@/lib/local-content";
 import { LocalArticle } from "@/lib/types";
 import ReportCard from "@/components/ReportCard";
+import { NoteFeedSection } from "@/components/note-feed-section";
 import Link from 'next/link';
 
 export const revalidate = 60;
@@ -178,6 +179,13 @@ export default function Home() {
             </div>
             <Suspense fallback={<div className="h-64 glass rounded-[3rem] animate-pulse" />}>
                 <FeaturedBlogSection />
+            </Suspense>
+        </section>
+
+        {/* --- note.com Premium Assets --- */}
+        <section className="mb-40">
+            <Suspense fallback={<div className="h-64 glass rounded-3xl animate-pulse" />}>
+                <NoteFeedSection />
             </Suspense>
         </section>
 
