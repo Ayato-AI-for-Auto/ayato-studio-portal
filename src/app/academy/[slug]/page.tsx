@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getLocalArticleBySlug, getLocalArticles } from '@/lib/local-content';
 import { Icons } from '@/components/icons';
 import { CTASection } from '@/components/cta-section';
+import { NoteCTA } from '@/components/note-cta';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -104,7 +105,12 @@ export default async function AcademyLessonPage({ params }: PageProps) {
                         <Markdown>{article.content}</Markdown>
                     </div>
 
-                    {/* CTA Section */}
+                    {/* Premium Asset CTA (Note) */}
+                    <div className="mt-16">
+                      <NoteCTA />
+                    </div>
+
+                    {/* Business CTA Section */}
                     <CTASection theme="indigo" />
                 </div>
             </div>
