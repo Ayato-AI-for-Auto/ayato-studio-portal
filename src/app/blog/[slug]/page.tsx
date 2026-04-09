@@ -30,8 +30,32 @@ export default async function BlogPostPage({ params }: PageProps) {
     notFound();
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": article.title,
+    "description": article.description,
+    "datePublished": article.date,
+    "author": {
+      "@type": "Person",
+      "name": "Ayato Human Editor"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Ayato Studio",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://ayato-studio.ai/favicon.ico"
+      }
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background text-white selection:bg-blue-500/30 overflow-x-hidden">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {/* Dynamic Background */}
         <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_50%,rgba(17,24,39,1)_0%,rgba(5,5,5,1)_100%)]" />
         

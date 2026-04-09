@@ -38,8 +38,31 @@ export default async function ReportDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": report.title,
+    "datePublished": report.timestamp,
+    "author": {
+      "@type": "Organization",
+      "name": "Ayato Intelligence Engine"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Ayato Studio",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://ayato-studio.ai/favicon.ico"
+      }
+    }
+  };
+
   return (
     <article className="container relative max-w-3xl py-6 lg:py-10 mx-auto px-4 sm:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link
         href="/reports"
         className={cn(

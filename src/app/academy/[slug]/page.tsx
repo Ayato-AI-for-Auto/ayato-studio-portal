@@ -30,8 +30,24 @@ export default async function AcademyLessonPage({ params }: PageProps) {
     notFound();
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": article.title,
+    "description": article.description,
+    "provider": {
+      "@type": "Organization",
+      "name": "Ayato Academy",
+      "sameAs": "https://ayato-studio.ai/academy"
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background text-white selection:bg-indigo-500/30 overflow-x-hidden">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {/* Dynamic Background */}
         <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_50%,rgba(30,27,75,1)_0%,rgba(5,5,5,1)_100%)]" />
         
