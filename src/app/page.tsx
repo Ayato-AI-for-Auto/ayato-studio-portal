@@ -134,15 +134,15 @@ export default function Home() {
           </div>
           
           <h1 className="text-6xl md:text-9xl font-black tracking-tighter text-white leading-[0.8] mb-12">
-            INTELLIGENCE<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">SYNERGY</span>
+            LIBERATION<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">FROM TOIL</span>
           </h1>
           
           <div className="max-w-3xl">
             <p className="text-xl md:text-3xl text-gray-400 font-medium leading-tight tracking-tight mb-12">
-                AI 速報、高度な週刊分析、そして独自のサービス。<br />
-                Ayato Studio は、情報の洪水から価値を抽出する。<br />
-                次世代のインテリジェンス・プラットフォーム。
+                AIによる人間の作業からの解放。<br />
+                Ayato Studio は、あなたを情報の洪水とルーチンワークから解放し、<br />
+                真に創造的な価値の深淵へと導くインテリジェンス・プラットフォーム。
             </p>
             <div className="flex gap-4">
                 <Link href="/blog" className="px-8 py-4 rounded-full bg-blue-600 text-white font-black uppercase tracking-widest hover:bg-blue-700 transition-colors">
